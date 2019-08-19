@@ -78,8 +78,13 @@ class Imdb {
                           // Image object
                           $item_image = $section_row->find("td.primary_photo img");
                           $row["image"] = "";
-                          if (count($item_image) > 0) {
+                          if (count($item_image) > 0)
+                          {
                               $row["image"] = $item_image->src;
+                              if (preg_match('/@/', $row["image"]))
+                              {
+                                  $row["image"] = preg_split('~@(?=[^@]*$)~', $row["image"])[0] . "@.jpg";
+                              }
                           }
 
                            // Get the id of the link
@@ -152,8 +157,16 @@ class Imdb {
         $response["year"] =   $this->textClean($film_page->find('.title_wrapper h1 #titleYear a')->text);
         $response["rating"] = $this->textClean($film_page->find('.ratings_wrapper .ratingValue strong span')->text);
         $response["length"] = $this->textClean($film_page->find('.subtext time')->text);
-        $response["poster"] = $film_page->find('.poster img')->src;
         $response["plot"] =   $this->textClean($film_page->find('.plot_summary .summary_text')->text);
+
+        // Get poster src
+        $response["poster"] = $film_page->find('.poster img')->src;
+        // If '@' appears in poster link
+        if (preg_match('/@/', $response["poster"]))
+        {
+            // Remove predetermined size to get original image
+            $response["poster"] = preg_split('~@(?=[^@]*$)~', $response["poster"])[0] . "@.jpg";
+        }
 
 
         // Get all cast list
