@@ -92,12 +92,9 @@ class Imdb {
                    }
                }
            }
-           return $response;
-       } else
-       {
-           // no results found
-           return $response;
        }
+       // Return resonse
+       return $response;
    }
 
 
@@ -108,7 +105,7 @@ class Imdb {
      *
      * @return array
      */
-    public function film($query) {
+    public function film($query, $techSpecs=false) {
         // Define response array
         $response = [
           "title" => "",
@@ -117,7 +114,8 @@ class Imdb {
           "rating" => "",
           "poster" => "",
           "plot" => "",
-          "cast" => []
+          "cast" => [],
+          "technical_specs" => []
         ];
         // Set filmId to querry
         $filmId = $query;
@@ -156,6 +154,7 @@ class Imdb {
         $response["length"] = $this->textClean($film_page->find('.subtext time')->text);
         $response["poster"] = $film_page->find('.poster img')->src;
         $response["plot"] =   $this->textClean($film_page->find('.plot_summary .summary_text')->text);
+
 
         // Get all cast list
         $cast_list_all = $film_page->find('table.cast_list tr');
@@ -207,6 +206,35 @@ class Imdb {
             }
         }
 
+        // Fetch technical specs
+        if ($techSpecs)
+        {
+            // Load technical specs page
+            $film_techSpecs_url = $film_url . "technical";
+            $film_techSpecs = $this->loadDom($film_techSpecs_url);
+
+            // Search dom for techspecs table
+            $techSpecs_table = $film_techSpecs->find('.dataTable tr');
+            // If table exists
+            if (count($techSpecs_table) > 0)
+            {
+                // Loop each row within table
+                foreach ($techSpecs_table as $techSpecs_row)
+                {
+                    // Get row title
+                    $row_title = $this->textClean($techSpecs_row->find('td')[0]->text);
+                    // Get row value
+                    $row_value = str_replace("  ", " <br> ", $this->textClean($techSpecs_row->find('td')[1]->text));
+
+                    // Create response var
+                    $row = [$row_title, $row_value];
+
+                    // Add row to technical specs
+                    array_push($response["technical_specs"], $row);
+                }
+            }
+        }
+
         return $response;
     }
 
@@ -241,7 +269,7 @@ class Imdb {
             // '/yyxxxxxxx'
             preg_match('/\/[A-Za-z]{2}[0-9]+/', $str, $imdbIds);
             $id = substr($imdbIds[0], 1);
-            if ($id == null || $id == undefined || count($id) == 0)
+            if ($id == NULL)
             {
                 throw new Exception("No id found");
             }
