@@ -1,0 +1,25 @@
+{
+    "name": "hmerritt/imdb-api",
+    "description": "Unofficial Imdb API",
+    "keywords": ["imdb", "api", "films"],
+    "license": "Apache 2.0",
+    "authors": [
+        {
+            "name": "Harry Merritt",
+            "email": "harry@merritt.es"
+        }
+    ],
+    "type": "project",
+    "require": {
+		    "php": ">=7.1",
+        "paquettg/php-html-parser": "^2.1"
+    },
+    "require-dev": {
+		    "phpunit/phpunit": "6.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "hmerritt\\Imdb\\": "src/"
+        }
+    }
+}
