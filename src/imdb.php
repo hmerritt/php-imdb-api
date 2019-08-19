@@ -56,7 +56,7 @@ class Imdb {
                if (array_key_exists($section_name, $response))
                {
                    // Get every row within the section table
-                   $section_table_rows = $search_section->find(".findList tr td.result_text");
+                   $section_table_rows = $search_section->find(".findList tr");
                    if (count($section_table_rows) > 0)
                    {
                        // Loop each table row within the section
@@ -67,14 +67,20 @@ class Imdb {
                            $row = [];
 
                            // Link ojbect
-                           $item_link = $section_row->find("a");
-
+                           $item_link = $section_row->find("td.result_text a");
                            // Text value
                            $row["value"] = $item_link->text;
                            // Skip item if no text value
                            if ($row["value"] == "") {
                                continue;
                            }
+
+                          // Image object
+                          $item_image = $section_row->find("td.primary_photo img");
+                          $row["image"] = "";
+                          if (count($item_image) > 0) {
+                              $row["image"] = $item_image->src;
+                          }
 
                            // Link
                            $item_link = $item_link->href;
