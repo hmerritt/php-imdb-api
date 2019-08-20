@@ -1,7 +1,7 @@
 {
     "name": "hmerritt/imdb-api",
-    "description": "Unofficial Imdb API",
-    "keywords": ["imdb", "api", "films"],
+    "description": "IMDB API that can fetch film data and search results",
+    "keywords": ["imdb", "api", "films", "search"],
     "license": "Apache 2.0",
     "authors": [
         {
