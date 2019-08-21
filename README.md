@@ -19,6 +19,9 @@ $ composer require hmerritt/imdb-api
 - Poster
 - Length
 - Plot
+- Trailer
+  - id
+  - link
 - Cast
   - actor name
   - actor id

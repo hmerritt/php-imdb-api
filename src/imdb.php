@@ -115,6 +115,10 @@ class Imdb {
           "rating_votes" => "",
           "poster" => "",
           "plot" => "",
+          "trailer" => [
+            "id" => "",
+            "link" => ""
+          ],
           "cast" => [],
           "technical_specs" => []
         ];
@@ -149,12 +153,12 @@ class Imdb {
         // Load page
         $film_page = $this->loadDom($film_url);
 
-        $response["title"] =        $this->textClean($this->htmlFind($film_page, '.title_wrapper h1')->text);
-        $response["year"] =         $this->textClean($this->htmlFind($film_page, '.title_wrapper h1 #titleYear a')->text);
-        $response["rating"] =       $this->textClean($this->htmlFind($film_page, '.ratings_wrapper .ratingValue strong span')->text);
-        $response["rating_votes"] = $this->textClean($this->htmlFind($film_page, '.ratings_wrapper span[itemprop=ratingCount]')->text);
-        $response["length"] =       $this->textClean($this->htmlFind($film_page, '.subtext time')->text);
-        $response["plot"] =         $this->textClean($this->htmlFind($film_page, '.plot_summary .summary_text')->text);
+        $response["title"] =         $this->textClean($this->htmlFind($film_page, '.title_wrapper h1')->text);
+        $response["year"] =          $this->textClean($this->htmlFind($film_page, '.title_wrapper h1 #titleYear a')->text);
+        $response["rating"] =        $this->textClean($this->htmlFind($film_page, '.ratings_wrapper .ratingValue strong span')->text);
+        $response["rating_votes"] =  $this->textClean($this->htmlFind($film_page, '.ratings_wrapper span[itemprop=ratingCount]')->text);
+        $response["length"] =        $this->textClean($this->htmlFind($film_page, '.subtext time')->text);
+        $response["plot"] =          $this->textClean($this->htmlFind($film_page, '.plot_summary .summary_text')->text);
 
         // If rating votes exists
         if ($this->count($response["rating_votes"]) > 0)
@@ -164,12 +168,25 @@ class Imdb {
         }
 
         // Get poster src
-        $response["poster"] = $this->htmlFind($film_page, '.poster img')->src;
+        $response["poster"] = $this->textClean($this->htmlFind($film_page, '.poster img')->src);
         // If '@' appears in poster link
         if (preg_match('/@/', $response["poster"]))
         {
             // Remove predetermined size to get original image
             $response["poster"] = preg_split('~@(?=[^@]*$)~', $response["poster"])[0] . "@.jpg";
+        }
+
+        // Get trailer link
+        $trailer_link = $film_page->find('.slate a[data-video]');
+        // Check if trailer link exists
+        if ($this->count($trailer_link) > 0)
+        {
+            // Get trailer id
+            $response["trailer"]["id"] = $this->textClean($trailer_link->getAttribute("data-video"));
+            if (!empty($response["trailer"]["id"]))
+            {
+                $response["trailer"]["link"] = "https://www.imdb.com/videoplayer/" . $response["trailer"]["id"];
+            }
         }
 
 
@@ -306,7 +323,7 @@ class Imdb {
      */
     private function emptyDomElement() {
         $dom = new Dom;
-        $dom->load('<a src="" href=""></a>');
+        $dom->load('<a src="" href="" data-video=""></a>');
         return $dom;
     }
 
@@ -358,7 +375,7 @@ class Imdb {
      * @return string
      */
     private function textClean($str) {
-        return trim(html_entity_decode($str));
+        return empty($str) ? "" : trim(html_entity_decode($str));
     }
 
 
