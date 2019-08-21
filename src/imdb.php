@@ -155,7 +155,7 @@ class Imdb {
 
         $response["title"] =         $this->textClean($this->htmlFind($film_page, '.title_wrapper h1')->text);
         $response["year"] =          $this->textClean($this->htmlFind($film_page, '.title_wrapper h1 #titleYear a')->text);
-        $response["rating"] =        $this->textClean($this->htmlFind($film_page, '.ratings_wrapper .ratingValue strong span')->text);
+        $response["rating"] =        $this->textClean($this->htmlFind($film_page, '.ratings_wrapper .ratingValue span[itemprop=ratingValue]')->text);
         $response["rating_votes"] =  $this->textClean($this->htmlFind($film_page, '.ratings_wrapper span[itemprop=ratingCount]')->text);
         $response["length"] =        $this->textClean($this->htmlFind($film_page, '.subtext time')->text);
         $response["plot"] =          $this->textClean($this->htmlFind($film_page, '.plot_summary .summary_text')->text);
@@ -257,9 +257,10 @@ class Imdb {
                 foreach ($techSpecs_table as $techSpecs_row)
                 {
                     // Get row title
-                    $row_title = $this->textClean($techSpecs_row->find('td')[0]->text);
+                    $row_title = $this->textClean($techSpecs_row->find('td')[0]->text(true));
                     // Get row value
-                    $row_value = str_replace("  ", " <br> ", $this->textClean($techSpecs_row->find('td')[1]->text));
+                    // -> reutrn all text (within all child nodes)
+                    $row_value = str_replace("  ", " <br> ", $this->textClean($techSpecs_row->find('td')[1]->text(true)));
 
                     // Create response var
                     $row = [$row_title, $row_value];
