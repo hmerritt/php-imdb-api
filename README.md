@@ -15,9 +15,9 @@ $ composer require hmerritt/imdb-api
 ### Film Data
 - Title
 - Year
-- Length
 - Rating
 - Poster
+- Length
 - Plot
 - Cast
   - actor name

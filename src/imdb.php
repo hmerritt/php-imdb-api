@@ -5,7 +5,7 @@
 * For the full copyright and license information, please view the LICENSE
 * file that was distributed with this source code.
 *
-* @package Imdb
+* @package hmerritt/imdb-api
 * @author Harry Merritt
 */
 namespace hmerritt\Imdb;
@@ -67,7 +67,7 @@ class Imdb {
                            $row = [];
 
                            // Link ojbect
-                           $item_link = $section_row->find("td.result_text a");
+                           $item_link = $this->htmlFind($section_row, 'td.result_text a');
                            // Text value
                            $row["title"] = $item_link->text;
                            // Skip item if no text value
@@ -76,15 +76,10 @@ class Imdb {
                            }
 
                           // Image object
-                          $item_image = $section_row->find("td.primary_photo img");
-                          $row["image"] = "";
-                          if (count($item_image) > 0)
+                          $row["image"] = $this->htmlFind($section_row, 'td.primary_photo img')->src;
+                          if (preg_match('/@/', $row["image"]))
                           {
-                              $row["image"] = $item_image->src;
-                              if (preg_match('/@/', $row["image"]))
-                              {
-                                  $row["image"] = preg_split('~@(?=[^@]*$)~', $row["image"])[0] . "@.jpg";
-                              }
+                              $row["image"] = preg_split('~@(?=[^@]*$)~', $row["image"])[0] . "@.jpg";
                           }
 
                            // Get the id of the link
@@ -117,6 +112,7 @@ class Imdb {
           "year" => "",
           "length" => "",
           "rating" => "",
+          "rating_votes" => "",
           "poster" => "",
           "plot" => "",
           "cast" => [],
@@ -153,14 +149,22 @@ class Imdb {
         // Load page
         $film_page = $this->loadDom($film_url);
 
-        $response["title"] =  $this->textClean($film_page->find('.title_wrapper h1')->text);
-        $response["year"] =   $this->textClean($film_page->find('.title_wrapper h1 #titleYear a')->text);
-        $response["rating"] = $this->textClean($film_page->find('.ratings_wrapper .ratingValue strong span')->text);
-        $response["length"] = $this->textClean($film_page->find('.subtext time')->text);
-        $response["plot"] =   $this->textClean($film_page->find('.plot_summary .summary_text')->text);
+        $response["title"] =        $this->textClean($this->htmlFind($film_page, '.title_wrapper h1')->text);
+        $response["year"] =         $this->textClean($this->htmlFind($film_page, '.title_wrapper h1 #titleYear a')->text);
+        $response["rating"] =       $this->textClean($this->htmlFind($film_page, '.ratings_wrapper .ratingValue strong span')->text);
+        $response["rating_votes"] = $this->textClean($this->htmlFind($film_page, '.ratings_wrapper span[itemprop=ratingCount]')->text);
+        $response["length"] =       $this->textClean($this->htmlFind($film_page, '.subtext time')->text);
+        $response["plot"] =         $this->textClean($this->htmlFind($film_page, '.plot_summary .summary_text')->text);
+
+        // If rating votes exists
+        if ($this->count($response["rating_votes"]) > 0)
+        {
+            // Remove all non-numbers
+            $response["rating_votes"] = preg_replace("/[^0-9 ]/", "", $response["rating_votes"]);
+        }
 
         // Get poster src
-        $response["poster"] = $film_page->find('.poster img')->src;
+        $response["poster"] = $this->htmlFind($film_page, '.poster img')->src;
         // If '@' appears in poster link
         if (preg_match('/@/', $response["poster"]))
         {
@@ -193,7 +197,7 @@ class Imdb {
                 // If character link does not exist
                 if (count($character_link) == 0)
                 {
-                    $actor["character"] = $this->textClean($cast_row->find('.character')->text);
+                    $actor["character"] = $this->textClean($this->htmlFind($cast_row, '.character')->text);
                 } else
                 {
                     $actor["character"] = $this->textClean($character_link->text);
@@ -218,6 +222,7 @@ class Imdb {
                 array_push($response["cast"], $actor);
             }
         }
+
 
         // Fetch technical specs
         if ($techSpecs)
@@ -265,6 +270,56 @@ class Imdb {
         $dom = new Dom;
         $dom->loadFromUrl($url);
         return $dom;
+    }
+
+
+    /**
+     * Find object within DOM (if it exists) and reutrn an attribute
+     *
+     * @param $dom object - searchable dom object
+     * @param $selection strting - css selector of what to find in dom
+     * @param $return strting - what attribute to return (e.g. text, src, href)
+     *
+     * @return string|array
+     */
+    private function htmlFind($dom, $selection) {
+        // Make selection within $dom object
+        $found = $dom->find($selection);
+        // If anything was found in selection
+        if (count($found) > 0)
+        {
+            return $found;
+        } else
+        {
+            return $this->emptyDomElement();
+        }
+    }
+
+
+    /**
+     * Extract an imdb-id from a string '/ttxxxxxxx/'
+     * Returns string of id or empty string if none found
+     *
+     * @param $str string - string to extract ID from
+     *
+     * @return string
+     */
+    private function emptyDomElement() {
+        $dom = new Dom;
+        $dom->load('<a src="" href=""></a>');
+        return $dom;
+    }
+
+
+    /**
+     * Count (either array items or string length)
+     *
+     * @param $item array|string - item to count
+     *
+     * @return string
+     */
+    private function count($item) {
+        return (is_array($item) ? count($item) : strlen($item));
     }
 
 
