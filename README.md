@@ -26,7 +26,7 @@ $ composer require hmerritt/imdb-api
   - actor name
   - actor id
   - image
-- Technical Specs
+- *Technical Specs*
 
 ### Search
 Search IMDB to return an array of films, people and companies
@@ -60,6 +60,11 @@ If you do not know the imdb-id of a film, a search string can be entered. This w
 $imdb->film("Apocalypse");
 ```
 
+### Caching
+Film data can be cached to speed up future requests of the same film.
+```php
+$imdb = new Imdb($cache=true);
+```
 
 ### Technical Specifications
 A films technical specifications can also be fetched by setting the `$techSpecs` param to `true`.
@@ -79,3 +84,4 @@ $imdb->film("tt0816692", $techSpecs=true);
 > All dependencies are managed automatically by `composer`.
 
 - [php-html-parser](https://github.com/paquettg/php-html-parser)
+- [filebase](https://github.com/tmarois/Filebase)
