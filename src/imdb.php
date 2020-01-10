@@ -16,19 +16,85 @@ use PHPHtmlParser\Dom;
 
 class Imdb {
 
-   /**  @var string $imdb_base_url the base or 'pre-fix' for all imdb links */
-   private $imdb_base_url = "https://www.imdb.com/";
+
+    /**
+     * Constructor function to set-up class variables
+     *
+     * @param $cache bool - cache film results
+     * @param $imdb_base_url string - the base or 'pre-fix' for all imdb links
+     *
+     * @return none
+     */
+    function __construct($cache=false, $imdb_base_url="https://www.imdb.com/") {
+        $this->isCaching     = $cache;
+        $this->imdb_base_url = $imdb_base_url;
+    }
 
 
-   /**
-    * Search IMDB for @param $query and return the all search results
-    *
-    * @param $query string - search string
-    * @param $category string - category to search within (films || people)
-    *
-    * @return array
-    */
-   public function search($query, $category="all") {
+    /**
+     * Cache
+     *
+     * @param $operation string - operation to perform on the cache
+     * @param $filmId    string - imdb-id of film (ttxxxxxxx)
+     * @param $filmData  object - film data from imdb
+     *
+     * @return bool|object
+     */
+    public function cache($operation, $filmId, $filmData=[]) {
+        // Is cache enabled?
+        if ($this->isCaching)
+        {
+            // Open cache database
+            $db_cache = new \Filebase\Database([
+                'dir'            => __DIR__ . DIRECTORY_SEPARATOR . 'cache/films/',
+                'backupLocation' => __DIR__ . DIRECTORY_SEPARATOR . 'cache/films/backups/',
+                'format'         => \Filebase\Format\Json::class,
+                'cache'          => true,
+                'cache_expires'  => 604800,
+                'pretty'         => false
+            ]);
+
+            //  Get film data from cache
+            $cache_filmData = $db_cache->get($filmId);
+
+            switch ($operation)
+            {
+                // Check if film has already been cached
+                case "exists":
+                    if ($db_cache->has($filmId))
+                    {
+                        return true;
+                    }
+                    break;
+
+                // Get film data from cache
+                case "get":
+                    return $cache_filmData->film;
+
+                // Update/add film data to cache
+                case "update":
+                    // Add film data data to cache
+                    $cache_filmData->film = $filmData;
+                    $cache_filmData->save();
+                    break;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
+    /**
+     * Search IMDB for @param $query and return the all search results
+     *
+     * @param $query string - search string
+     * @param $category string - category to search within (films || people)
+     *
+     * @return array
+     */
+    public function search($query, $category="all") {
        // Replace all spaces with '+'
        $query = preg_replace("/\s/", "+", $query);
        // Create search url
@@ -95,7 +161,7 @@ class Imdb {
        }
        // Return resonse
        return $response;
-   }
+    }
 
 
     /**
@@ -108,6 +174,7 @@ class Imdb {
     public function film($query, $techSpecs=false) {
         // Define response array
         $response = [
+          "id" => "",
           "title" => "",
           "year" => "",
           "length" => "",
@@ -129,7 +196,7 @@ class Imdb {
         {
             // String contains all numbers
             // Decide if $query is imdb-id or search string
-            if (ctype_digit($query))
+            if (ctype_digit($query) && strlen($query) === 7)
             {
                 $filmId = "tt" . $query;
             } else
@@ -142,23 +209,34 @@ class Imdb {
                 {
                     // Use first film returned from search
                     $filmId = $query_search["titles"][0]["id"];
-                } else {
+                } else
+                {
                     return $response;
                 }
             }
         }
+
+
+        // Check if film has been cached
+        if ($this->cache("exists", $filmId))
+        {
+            // Return cached film data
+            return $this->cache("get", $filmId);
+        }
+
 
         // Set film url
         $film_url = $this->imdb_base_url . "title/$filmId/";
         // Load page
         $film_page = $this->loadDom($film_url);
 
-        $response["title"] =         $this->textClean($this->htmlFind($film_page, '.title_wrapper h1')->text);
-        $response["year"] =          $this->textClean($this->htmlFind($film_page, '.title_wrapper h1 #titleYear a')->text);
-        $response["rating"] =        $this->textClean($this->htmlFind($film_page, '.ratings_wrapper .ratingValue span[itemprop=ratingValue]')->text);
+        $response["id"]           =  $filmId;
+        $response["title"]        =  $this->textClean($this->htmlFind($film_page, '.title_wrapper h1')->text);
+        $response["year"]         =  $this->textClean($this->htmlFind($film_page, '.title_wrapper h1 #titleYear a')->text);
+        $response["rating"]       =  $this->textClean($this->htmlFind($film_page, '.ratings_wrapper .ratingValue span[itemprop=ratingValue]')->text);
         $response["rating_votes"] =  $this->textClean($this->htmlFind($film_page, '.ratings_wrapper span[itemprop=ratingCount]')->text);
-        $response["length"] =        $this->textClean($this->htmlFind($film_page, '.subtext time')->text);
-        $response["plot"] =          $this->textClean($this->htmlFind($film_page, '.plot_summary .summary_text')->text);
+        $response["length"]       =  $this->textClean($this->htmlFind($film_page, '.subtext time')->text);
+        $response["plot"]         =  $this->textClean($this->htmlFind($film_page, '.plot_summary .summary_text')->text);
 
         // If rating votes exists
         if ($this->count($response["rating_votes"]) > 0)
@@ -185,7 +263,7 @@ class Imdb {
             $response["trailer"]["id"] = $this->textClean($trailer_link->getAttribute("data-video"));
             if (!empty($response["trailer"]["id"]))
             {
-                $response["trailer"]["link"] = "https://www.imdb.com/videoplayer/" . $response["trailer"]["id"];
+                $response["trailer"]["link"] = $this->imdb_base_url ."videoplayer/". $response["trailer"]["id"];
             }
         }
 
@@ -271,6 +349,11 @@ class Imdb {
             }
         }
 
+
+        // Add film data to cache
+        $this->cache("update", $filmId, $response);
+
+
         return $response;
     }
 
@@ -315,12 +398,9 @@ class Imdb {
 
 
     /**
-     * Extract an imdb-id from a string '/ttxxxxxxx/'
-     * Returns string of id or empty string if none found
+     * Create an empty html element and return it
      *
-     * @param $str string - string to extract ID from
-     *
-     * @return string
+     * @return object
      */
     private function emptyDomElement() {
         $dom = new Dom;
@@ -350,7 +430,8 @@ class Imdb {
      * @return string
      */
     private function extractImdbId($str) {
-        try {
+        try
+        {
             // Search string for 2 letters followed by numbers
             // '/yyxxxxxxx'
             preg_match('/\/[A-Za-z]{2}[0-9]+/', $str, $imdbIds);

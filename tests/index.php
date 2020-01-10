@@ -14,7 +14,7 @@ $q = $_GET["q"];
 
 // Initialise Imdb
 // Load film data
-$imdb = new Imdb();
+$imdb = new Imdb($cache=true);
 $film = $imdb->film($q, $techSpecs=true);  // tt0816692  tt8633464
 
 // Return loaded film data
