@@ -30,8 +30,9 @@ class Imdb
     {
         //  Default options
         $defaults = [
-            'cache'      => true,
-            'techSpecs'  => true,
+            'cache'        => true,
+            'curlHeaders'  => [],
+            'techSpecs'    => true,
         ];
 
         //  Merge any user options with the default ones
@@ -67,7 +68,7 @@ class Imdb
      * Searches IMDB for films, people and companies
      * @param string $search
      * @param array  $options
-     * @return $searchData
+     * @return array $searchData
      */
     public function search(string $search, array $options = []): array
     {
