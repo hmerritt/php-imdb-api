@@ -21,22 +21,25 @@ class Imdb
     protected $baseUrl = 'https://www.imdb.com/';
 
     /**
-     * Returns default options plus any user options
+     * Returns default options combined with any user options
      *
      * @param string $options
-     * @return array
+     * @return array $defaults
      */
-    private function getOptions(array $options = []): array
+    private function populateOptions(array $options = []): array
     {
+        //  Default options
         $defaults = [
             'cache'      => true,
             'techSpecs'  => true,
         ];
 
+        //  Merge any user options with the default ones
         foreach ($options as $key => $option) {
             $defaults[$key] = $option;
         }
 
+        //  Return final options array
         return $defaults;
     }
 
@@ -45,12 +48,19 @@ class Imdb
      * film name is passed instead of film-id
      * @param string $film
      * @param array  $options
-     * @return $filmData
+     * @return array $filmData
      */
-    public function film(string $film, array $options = [])
+    public function film(string $film, array $options = []): array
     {
-        $options = $this->getOptions($options);
-        return $options;
+        //  Combine user options with default ones
+        $options = $this->populateOptions($options);
+
+        return [
+            "id" => "tt0816692",
+            "title" => "Interstellar",
+            "length" => "2h 49min",
+            "year" => "2014"
+        ];
     }
 
     /**
@@ -59,9 +69,16 @@ class Imdb
      * @param array  $options
      * @return $searchData
      */
-    public function search(string $search, array $options = [])
+    public function search(string $search, array $options = []): array
     {
-        $options = $this->getOptions($options);
+        //  Combine user options with default ones
+        $options = $this->populateOptions($options);
+
+        return [
+            "titles" => [],
+            "names" => [],
+            "companies" => []
+        ];
     }
 
 }
