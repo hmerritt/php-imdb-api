@@ -1,8 +1,8 @@
 <?php
-namespace hmerritt\Dom;
+namespace hmerritt;
 
 /**
-*  Class Imdb
+*  Class Dom
 *
 *
 * @package hmerritt/imdb-api
@@ -16,11 +16,11 @@ class Dom
      *
      * @param string $url
      *
-     * @return Dom
+     * @return \PHPHtmlParser\Dom
      */
-    public function fetch(string $url, array $options): Dom
+    public function fetch(string $url, array $options)
     {
-        $dom = new Dom;
+        $dom = new \PHPHtmlParser\Dom;
         $dom->loadFromUrl($url, [
             "curlHeaders" => $options["curlHeaders"]
         ]);
@@ -35,7 +35,7 @@ class Dom
      *
      * @return array
      */
-    public function find(object $dom, string $selection): array
+    public function find(object $dom, string $selection)
     {
         $found = $dom->find($selection);
         if (count($found) > 0) {
@@ -51,7 +51,7 @@ class Dom
      *
      * @return Dom
      */
-    private function emptyElement(): Dom
+    private function emptyElement()
     {
         $dom = new Dom;
         $dom->load('<a src="" href="" data-video=""></a>');

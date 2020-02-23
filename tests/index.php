@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 
 // Import libs
 require "../vendor/autoload.php";
-use hmerritt\Imdb\Imdb;
+use hmerritt\Imdb;
 
 
 // Get url search param

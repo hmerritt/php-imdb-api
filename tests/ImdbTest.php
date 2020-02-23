@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use hmerritt\Imdb\Imdb;
+use hmerritt\Imdb;
 
 class ImdbTest extends TestCase {
 

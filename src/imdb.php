@@ -1,7 +1,5 @@
 <?php
-namespace hmerritt\Imdb;
-
-use PHPHtmlParser\Dom;
+namespace hmerritt;
 
 /**
 *  Class Imdb
@@ -31,7 +29,7 @@ class Imdb
         //  Default options
         $defaults = [
             'cache'        => true,
-            'curlHeaders'  => [],
+            'curlHeaders'  => ['Accept-Language: en-US,en;q=0.5'],
             'techSpecs'    => true,
         ];
 
@@ -55,6 +53,13 @@ class Imdb
     {
         //  Combine user options with default ones
         $options = $this->populateOptions($options);
+
+        //  Initiate response object
+        // -> handles what the api returns
+        $response = new Response;
+
+        $dom = new Dom;
+        $page = $dom->fetch("https://www.imdb.com/title/tt0816692/", $options);
 
         return [
             "id" => "tt0816692",
