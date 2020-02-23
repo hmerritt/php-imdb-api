@@ -62,14 +62,20 @@ class Imdb
         //  -> handles page scraping
         $dom = new Dom;
 
+        //  Initiate html-pieces object
+        //  -> handles finding specific content from the dom
+        $htmlPieces = new HtmlPieces;
+
         //  Load imdb page and parse the dom
-        $page = $dom->fetch("https://www.imdb.com/title/tt0816692/", $options);
+        $page = $dom->fetch($this->baseUrl."title/".$film, $options);
 
-        $response->add("id", "tt0816692");
-        $response->add("title", "Interstellar");
-        $response->add("length", "2h 49min");
-        $response->add("year", "2014");
+        //  Add all film data to response $store
+        $response->add("id", $film);
+        $response->add("title", $htmlPieces->get($page, "title"));
+        $response->add("length", $htmlPieces->get($page, "length"));
+        $response->add("year", $htmlPieces->get($page, "year"));
 
+        //  Return the response $store
         return $response->return();
     }
 
