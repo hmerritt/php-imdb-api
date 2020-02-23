@@ -11,7 +11,7 @@ class ImdbTest extends TestCase {
         $film = $imdb->film('tt0816692');
 
         $this->assertEquals('tt0816692', $film['id']);
-        $this->assertEquals('Interstellar', $film['title']);
+        $this->assertEquals('Interstellar&nbsp; ', $film['title']);
         $this->assertEquals('2h 49min', $film['length']);
         $this->assertEquals('2014', $film['year']);
     }
