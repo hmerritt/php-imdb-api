@@ -47,7 +47,7 @@ class Imdb
      * film name is passed instead of film-id
      * @param string $film
      * @param array  $options
-     * @return array $filmData
+     * @return array $response
      */
     public function film(string $film, array $options = []): array
     {
@@ -58,15 +58,19 @@ class Imdb
         // -> handles what the api returns
         $response = new Response;
 
+        //  Initiate dom object
+        //  -> handles page scraping
         $dom = new Dom;
+
+        //  Load imdb page and parse the dom
         $page = $dom->fetch("https://www.imdb.com/title/tt0816692/", $options);
 
-        return [
-            "id" => "tt0816692",
-            "title" => "Interstellar",
-            "length" => "2h 49min",
-            "year" => "2014"
-        ];
+        $response->add("id", "tt0816692");
+        $response->add("title", "Interstellar");
+        $response->add("length", "2h 49min");
+        $response->add("year", "2014");
+
+        return $response->return();
     }
 
     /**
@@ -80,11 +84,15 @@ class Imdb
         //  Combine user options with default ones
         $options = $this->populateOptions($options);
 
-        return [
-            "titles" => [],
-            "names" => [],
-            "companies" => []
-        ];
+        //  Initiate response object
+        // -> handles what the api returns
+        $response = new Response;
+
+        $response->add("titles", []);
+        $response->add("names", []);
+        $response->add("companies", []);
+
+        return $response->return();
     }
 
 }
