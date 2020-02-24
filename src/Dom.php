@@ -49,11 +49,11 @@ class Dom
     /**
      * Create and parse an empty html string as a DOM element
      *
-     * @return Dom
+     * @return \PHPHtmlParser\Dom
      */
     private function emptyElement()
     {
-        $dom = new Dom;
+        $dom = new \PHPHtmlParser\Dom;
         $dom->load('<a src="" href="" data-video=""></a>');
         return $dom;
     }
