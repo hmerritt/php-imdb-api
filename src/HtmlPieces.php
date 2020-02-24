@@ -27,7 +27,33 @@ class HtmlPieces
 
         switch ($element) {
             case "title":
-                return $this->strClean($dom->find($page, '.title_wrapper h1')->text);
+                $title = $dom->find($page, '.title_wrapper h1')->text;
+                return $this->strClean($title);
+                break;
+
+            case "year":
+                $year = $dom->find($page, '.title_wrapper h1 #titleYear a')->text;
+                return $this->strClean($year);
+                break;
+
+            case "length":
+                $length = $dom->find($page, '.subtext time')->text;
+                return $this->strClean($length);
+                break;
+
+            case "plot":
+                $plot = $dom->find($page, '.plot_summary .summary_text')->text;
+                return $this->strClean($plot);
+                break;
+
+            case "rating":
+                $rating = $dom->find($page, '.ratings_wrapper .ratingValue span[itemprop=ratingValue]')->text;
+                return $this->strClean($rating);
+                break;
+
+            case "rating_votes":
+                $rating_votes = $dom->find($page, '.ratings_wrapper span[itemprop=ratingCount]')->text;
+                return $this->strClean($rating_votes);
                 break;
 
             default:

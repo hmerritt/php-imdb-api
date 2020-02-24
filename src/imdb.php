@@ -72,8 +72,15 @@ class Imdb
         //  Add all film data to response $store
         $response->add("id", $film);
         $response->add("title", $htmlPieces->get($page, "title"));
-        $response->add("length", $htmlPieces->get($page, "length"));
         $response->add("year", $htmlPieces->get($page, "year"));
+        $response->add("length", $htmlPieces->get($page, "length"));
+        $response->add("plot", $htmlPieces->get($page, "plot"));
+        $response->add("rating", $htmlPieces->get($page, "rating"));
+        $response->add("rating_votes", $htmlPieces->get($page, "rating_votes"));
+        $response->add("poster", $htmlPieces->get($page, "poster"));
+        $response->add("trailer", $htmlPieces->get($page, "trailer"));
+        $response->add("cast", $htmlPieces->get($page, "cast"));
+        $response->add("technical_specs", $htmlPieces->get($page, "technical_specs"));
 
         //  Return the response $store
         return $response->return();
