@@ -45,11 +45,11 @@ class Imdb
     /**
      * Gets film data from IMDB. Will first search if the
      * film name is passed instead of film-id
-     * @param string $film
+     * @param string $filmId
      * @param array  $options
      * @return array $response
      */
-    public function film(string $film, array $options = []): array
+    public function film(string $filmId, array $options = []): array
     {
         //  Combine user options with default ones
         $options = $this->populateOptions($options);
@@ -67,10 +67,10 @@ class Imdb
         $htmlPieces = new HtmlPieces;
 
         //  Load imdb page and parse the dom
-        $page = $dom->fetch($this->baseUrl."title/".$film, $options);
+        $page = $dom->fetch($this->baseUrl."title/".$filmId, $options);
 
         //  Add all film data to response $store
-        $response->add("id", $film);
+        $response->add("id", $filmId);
         $response->add("title", $htmlPieces->get($page, "title"));
         $response->add("year", $htmlPieces->get($page, "year"));
         $response->add("length", $htmlPieces->get($page, "length"));

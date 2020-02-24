@@ -33,7 +33,7 @@ class Dom
      * @param object $dom
      * @param string $selection
      *
-     * @return array
+     * @return array|object
      */
     public function find(object $dom, string $selection)
     {
