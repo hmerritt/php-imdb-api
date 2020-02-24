@@ -53,7 +53,7 @@ class HtmlPieces
 
             case "rating_votes":
                 $rating_votes = $dom->find($page, '.ratings_wrapper span[itemprop=ratingCount]')->text;
-                return $this->strClean($rating_votes);
+                return preg_replace("/[^0-9 ]/", "", $this->strClean($rating_votes));
                 break;
 
             default:
