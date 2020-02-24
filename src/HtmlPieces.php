@@ -56,6 +56,12 @@ class HtmlPieces
                 return preg_replace("/[^0-9 ]/", "", $this->strClean($rating_votes));
                 break;
 
+            case "poster":
+                $poster = $dom->find($page, '.poster img')->src;
+                $poster = preg_match('/@/', $poster) ? preg_split('~@(?=[^@]*$)~', $poster)[0] . "@.jpg" : $poster;
+                return $this->strClean($poster);
+                break;
+
             default:
                 return "";
         }
@@ -65,10 +71,10 @@ class HtmlPieces
      * Cleans-up string
      * -> removes white-space and html entitys
      *
-     * @param string $string
+     * @param $string
      * @return string
      */
-    private function strClean(string $string)
+    private function strClean($string)
     {
         return empty($string) ? "" : str_replace(chr(194).chr(160), '', html_entity_decode(trim($string)));
     }
