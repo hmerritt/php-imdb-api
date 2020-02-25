@@ -1,7 +1,6 @@
 language: php
 
 php:
-  - 7.2
   - 7.3
 
 install:
@@ -13,4 +12,4 @@ script:
   - php vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
 after_script:
-  - php vendor/bin/coveralls
+  - travis_retry php vendor/bin/php-coveralls -v
