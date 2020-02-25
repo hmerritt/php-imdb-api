@@ -5,17 +5,26 @@ header('Content-Type: application/json');
 
 // Import libs
 require "../vendor/autoload.php";
-use PHPHtmlParser\Dom;
-use hmerritt\Imdb\Imdb;
+use hmerritt\Imdb;
 
 
-// Get url search param
-$q = $_GET["q"];
+//  Get url params
+$type = $_GET["type"];
+$query = $_GET["q"];
 
 // Initialise Imdb
-// Load film data
-$imdb = new Imdb($cache=true);
-$film = $imdb->film($q, $techSpecs=true);  // tt0816692  tt8633464
+$imdb = new Imdb();
 
-// Return loaded film data
-echo json_encode($film, JSON_PRETTY_PRINT);
+switch($type)
+{
+	case "film":
+		$response = $imdb->film($query);
+		break;
+
+	case "search":
+		$response = $imdb->search($query);
+		break;
+}
+
+//  -> Return loaded film data
+echo json_encode($response, JSON_PRETTY_PRINT);
