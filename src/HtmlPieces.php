@@ -178,7 +178,7 @@ class HtmlPieces
      * @param string $str
      * @return string
      */
-    private function extractImdbId($str)
+    public function extractImdbId($str)
     {
         // Search string for 2 letters followed by numbers
         // '/yyxxxxxxx'
@@ -199,7 +199,7 @@ class HtmlPieces
      * @param $string
      * @return string
      */
-    private function strClean($string)
+    public function strClean($string)
     {
         return empty($string) ? "" : str_replace(chr(194).chr(160), '', html_entity_decode(trim($string)));
     }

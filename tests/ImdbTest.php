@@ -30,4 +30,16 @@ class ImdbTest extends TestCase {
         $this->assertEquals('tt0816692', $search['titles'][0]['id']);
     }
 
+    public function testFilmOptions()
+    {
+        $imdb = new Imdb;
+        $film = $imdb->film('tt0065531', [
+            "curlHeaders" => ['Accept-Language: de-DE, de;q=0.5'],
+            "techSpecs" => false
+        ]);
+
+        $this->assertEquals('Vier im roten Kreis', $film['title']);
+        $this->assertEquals(0, count($film['technical_specs']));
+    }
+
 }
