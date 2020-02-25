@@ -44,16 +44,6 @@ class Cache
     }
 
     /**
-     * Counts all files in the cache
-     *
-     * @return int
-     */
-    public function count(): int
-    {
-        return $this->cache->count();
-    }
-
-    /**
      * Deletes an item from the cache
      *
      * @return bool
