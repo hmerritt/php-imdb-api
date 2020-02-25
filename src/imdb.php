@@ -12,13 +12,6 @@ class Imdb
 {
 
     /**
-     * IMDB base url
-     *
-     * @var string
-     */
-    protected $baseUrl = 'https://www.imdb.com/';
-
-    /**
      * Returns default options combined with any user options
      *
      * @param string $options
@@ -66,8 +59,8 @@ class Imdb
         //  -> handles finding specific content from the dom
         $htmlPieces = new HtmlPieces;
 
-        //  Load imdb page and parse the dom
-        $page = $dom->fetch($this->baseUrl."title/".$filmId, $options);
+        //  Load imdb film page and parse the dom
+        $page = $dom->fetch("https://www.imdb.com/title/".$filmId, $options);
 
         //  Add all film data to response $store
         $response->add("id", $filmId);
@@ -81,9 +74,10 @@ class Imdb
         $response->add("trailer", $htmlPieces->get($page, "trailer"));
         $response->add("cast", $htmlPieces->get($page, "cast"));
 
-        //  Technical specs
+        //  If techSpecs is enabled in user $options
+        //  -> Make a second request to load the full techSpecs page
         if ($options["techSpecs"]) {
-                $page_techSpecs = $dom->fetch($this->baseUrl."title/".$filmId.'/technical', $options);
+                $page_techSpecs = $dom->fetch("https://www.imdb.com/title/$filmId/technical", $options);
                 $response->add("technical_specs", $htmlPieces->get($page_techSpecs, "technical_specs"));
         }
         else {
@@ -109,9 +103,21 @@ class Imdb
         // -> handles what the api returns
         $response = new Response;
 
-        $response->add("titles", []);
-        $response->add("names", []);
-        $response->add("companies", []);
+        //  Initiate dom object
+        //  -> handles page scraping
+        $dom = new Dom;
+
+        //  Initiate html-pieces object
+        //  -> handles finding specific content from the dom
+        $htmlPieces = new HtmlPieces;
+
+        //  Load imdb search page and parse the dom
+        $page = $dom->fetch("https://www.imdb.com/find?q=$search&s=all", $options);
+
+        //  Add all search data to response $store
+        $response->add("titles", $htmlPieces->get($page, "titles"));
+        $response->add("names", $htmlPieces->get($page, "names"));
+        $response->add("companies", $htmlPieces->get($page, "companies"));
 
         return $response->return();
     }

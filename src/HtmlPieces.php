@@ -19,7 +19,7 @@ class HtmlPieces
      * @param string $element
      * @return string
      */
-    public function get(object $page, string $element, array $options = [])
+    public function get(object $page, string $element)
     {
         //  Initiate dom object
         //  -> handles page scraping
@@ -122,6 +122,48 @@ class HtmlPieces
                     }
                 }
                 return $technical_specs;
+                break;
+
+            case "titles":
+            case "names":
+            case "companies":
+                $response = [];
+                $sections = $page->find(".findSection");
+                if (count($sections) > 0)
+                {
+                    foreach ($sections as $section)
+                    {
+                        $sectionName = @strtolower($section->find(".findSectionHeader")->text);
+                        if ($sectionName === $element) {
+                            $sectionRows = $section->find(".findList tr");
+                            if (count($sectionRows) > 0)
+                            {
+                                foreach ($sectionRows as $sectionRow)
+                                {
+                                    $row = [];
+
+                                    $link = $dom->find($sectionRow, 'td.result_text a');
+                                    $row["title"] = $link->text;
+                                    if ($row["title"] == "") {
+                                        continue;
+                                    }
+
+                                    $row["image"] = $dom->find($sectionRow, 'td.primary_photo img')->src;
+                                    if (preg_match('/@/', $row["image"]))
+                                    {
+                                        $row["image"] = preg_split('~@(?=[^@]*$)~', $row["image"])[0] . "@.jpg";
+                                    }
+                                    $row["image"] = empty($row["image"]) ? "" : $row["image"];
+
+                                    $row["id"] = $this->extractImdbId($link->href);
+
+                                    array_push($response, $row);
+                                }
+                            }
+                        }
+                    }
+                }
+                return $response;
                 break;
 
             default:
