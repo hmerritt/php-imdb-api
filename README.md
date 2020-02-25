@@ -2,6 +2,8 @@
 PHP IMDB-API that can fetch film data and search results.
 
 
+
+
 ## Install
 Install the latest version using [composer](https://getcomposer.org/).
 
@@ -10,26 +12,6 @@ $ composer require hmerritt/imdb-api
 ```
 
 
-## Features
-
-### Film Data
-- Title
-- Year
-- Rating
-- Poster
-- Length
-- Plot
-- Trailer
-  - id
-  - link
-- Cast
-  - actor name
-  - actor id
-  - image
-- *Technical Specs*
-
-### Search
-Search IMDB to return an array of films, people and companies
 
 
 ## Usage
@@ -38,7 +20,7 @@ Search IMDB to return an array of films, people and companies
 require "vendor/autoload.php";
 use hmerritt\Imdb\Imdb;
 
-$imdb = new Imdb();
+$imdb = new Imdb;
 
 // Search imdb
 // -> returns array of films and people found
@@ -48,6 +30,34 @@ $imdb->search("Apocalypse");
 // -> returns array of film data (title, year, rating...)
 $imdb->film("tt0816692");
 ```
+
+
+### Options
+
+| Name          	| Type   	| Default Value                         	| Description                                                                                   	|
+|---------------	|--------	|---------------------------------------	|-----------------------------------------------------------------------------------------------	|
+| `curlHeaders` 	| array  	| `['Accept-Language: en-US,en;q=0.5']` 	| Custom headers can be passed to `cURL` when fetching the IMDB page                            	|
+| `cache`       	| bool   	| `true`                                	| Caches film data to speed-up future requests for the same film                                	|
+| `techSpecs`   	| bool   	| `true`                                	| Loads a films technical specifications (this will take longer as it makes a separate request) 	|
+| `category`    	| string 	| `all`                                 	| What category to search for (films `tt`, people `nm` or companies `co`)                       	|
+
+```php
+$imdb = new Imdb;
+
+//  Options are passed as an array as the second argument
+//  These are the default options
+$imdb->film("tt0816692", [
+    'cache'        => true,
+    'curlHeaders'  => ['Accept-Language: en-US,en;q=0.5'],
+    'techSpecs'    => true,
+]);
+
+$imdb->search("Interstellar", [
+    'category'     => 'all',
+    'curlHeaders'  => ['Accept-Language: en-US,en;q=0.5'],
+]);
+```
+
 
 ### Best Match
 If you do not know the imdb-id of a film, a search string can be entered. This will search imdb and use the first result as the film to fetch data for.
@@ -60,23 +70,48 @@ If you do not know the imdb-id of a film, a search string can be entered. This w
 $imdb->film("Apocalypse");
 ```
 
-### Caching
-Film data can be cached to speed up future requests of the same film.
-```php
-$imdb = new Imdb($cache=true);
+
+
+
+## Features
+
+### Film Data
+```
+- Title
+- Year
+- Rating
+- Poster
+- Length
+- Plot
+- Trailer
+    - id
+    - link
+- Cast
+    - actor name
+    - actor id
+    - image
+- Technical Specs
 ```
 
-### Technical Specifications
-A films technical specifications can also be fetched by setting the `$techSpecs` param to `true`.
 
-> Note that this will take longer as it needs to make a second request to load the tech specs.
+### Search
+Search IMDB to return an array of films, people and companies
 
-```php
-// Gets film data
-// also gets technical specs
-// -> returns array of film data with `technical_specs`
-$imdb->film("tt0816692", $techSpecs=true);
 ```
+- Films
+    - id
+    - title
+    - image
+- People
+    - id
+    - name
+    - image
+- Companies
+    - id
+    - name
+    - image
+```
+
 
 
 
