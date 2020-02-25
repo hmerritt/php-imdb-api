@@ -22,6 +22,7 @@ class Imdb
         //  Default options
         $defaults = [
             'cache'        => true,
+            'category'     => 'all',
             'curlHeaders'  => ['Accept-Language: en-US,en;q=0.5'],
             'techSpecs'    => true,
         ];
@@ -58,6 +59,23 @@ class Imdb
         //  Initiate html-pieces object
         //  -> handles finding specific content from the dom
         $htmlPieces = new HtmlPieces;
+
+        // Check for 'tt' at start of $filmId
+        if (substr($filmId, 0, 2) !== "tt")
+        {
+            //  Search $filmId and use first result
+            $search_film = $this->search($filmId, [ "category" => "tt" ]);
+            if ($htmlPieces->count($search_film["titles"]) > 0)
+            {
+                // Use first film returned from search
+                $filmId = $search_film["titles"][0]["id"];
+            } else
+            {
+                //  No film found
+                //  -> return default (empty) response
+                return $response->default('film');
+            }
+        }
 
         //  Load imdb film page and parse the dom
         $page = $dom->fetch("https://www.imdb.com/title/".$filmId, $options);
@@ -112,7 +130,7 @@ class Imdb
         $htmlPieces = new HtmlPieces;
 
         //  Load imdb search page and parse the dom
-        $page = $dom->fetch("https://www.imdb.com/find?q=$search&s=all", $options);
+        $page = $dom->fetch("https://www.imdb.com/find?q=$search&s=".$options["category"], $options);
 
         //  Add all search data to response $store
         $response->add("titles", $htmlPieces->get($page, "titles"));

@@ -210,7 +210,7 @@ class HtmlPieces
      * @param array|string $item
      * @return string
      */
-    private function count($item)
+    public function count($item)
     {
         return (is_countable($item) ? count($item) : (is_string($item) ? strlen($item) : 0));
     }
