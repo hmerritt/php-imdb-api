@@ -19,7 +19,7 @@ class Response
     public $store = [];
 
     /**
-     * Add (or modify) to the response $store
+     * Add (or modify) items to the response $store
      *
      * @param string $key
      * @param string $value
@@ -52,6 +52,47 @@ class Response
     public function return(): array
     {
         return $this->store;
+    }
+
+    /**
+     * Returns default response for an endpoint
+     *
+     * @param string $endpoint
+     * @return array $defaults
+     */
+    public function default(string $endpoint): array
+    {
+        $response = [];
+        switch($endpoint)
+        {
+            case "film":
+                $response = [
+                    "id" => "",
+                    "title" => "",
+                    "year" => "",
+                    "length" => "",
+                    "plot" => "",
+                    "rating" => "",
+                    "rating_votes" => "",
+                    "poster" => "",
+                    "trailer" => [
+                        "id" => "",
+                        "link" => ""
+                    ],
+                    "cast" => [],
+                    "technical_specs" => []
+                ];
+                break;
+
+            case "search":
+                $response = [
+                    "titles" => [],
+                    "names" => [],
+                    "companies" => []
+                ];
+                break;
+        }
+        return $response;
     }
 
 }
