@@ -1,4 +1,7 @@
 # PHP IMDB API
+
+[![Build Status](https://travis-ci.org/hmerritt/php-imdb-api.svg?branch=master)](https://travis-ci.org/hmerritt/php-imdb-api)    [![Coverage Status](https://coveralls.io/repos/github/hmerritt/php-imdb-api/badge.svg?branch=master)](https://coveralls.io/github/hmerritt/php-imdb-api?branch=master)
+
 PHP IMDB-API that can fetch film data and search results.
 
 
