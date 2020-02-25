@@ -20,8 +20,7 @@
         "php-coveralls/php-coveralls": "^2.2"
     },
 	"scripts": {
-		"test": "php vendor/phpunit/phpunit/phpunit",
-		"test-coverage": "php vendor/phpunit/phpunit/phpunit --coverage-clover build/logs/clover.xml"
+		"test": "php vendor/phpunit/phpunit/phpunit"
 	},
     "autoload": {
         "psr-4": {

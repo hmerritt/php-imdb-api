@@ -7,17 +7,40 @@ use hmerritt\Cache;
 
 class CacheTest extends TestCase {
 
-    public function testCache()
+    public function testAddToCache()
     {
         $cache = new Cache;
-        $cache_testStore = [
+        $testData = [
             "title" => "Interstellar"
         ];
 
-        $cache->add("test", $cache_testStore);
-        $cache_testFile = $cache->get("test");
+        $cache->add("test", $testData);
+        $testFile = $cache->get("test");
 
-        $this->assertEquals($cache_testStore, $cache_testFile->film);
+        $this->assertEquals($testData, $testFile->film);
+
+        $cache->delete("test");
+    }
+
+    public function testHasCache()
+    {
+        $cache = new Cache;
+        $cache->add("testHas", [ "test" => "has" ]);
+
+        $this->assertEquals(true, $cache->has("testHas"));
+        $this->assertEquals(false, $cache->has("testHasNot"));
+
+        $cache->delete("testHas");
+    }
+
+    public function testDeleteFromCache()
+    {
+        $cache = new Cache;
+        $cache->add("testHas", [ "test" => "has" ]);
+
+        $this->assertEquals(true, $cache->has("testHas"));
+        $cache->delete("testHas");
+        $this->assertEquals(false, $cache->has("testHas"));
     }
 
 }
