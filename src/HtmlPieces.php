@@ -77,7 +77,7 @@ class HtmlPieces
                 $findAllCast = $dom->find($page, 'table.cast_list tr');
                 foreach ($findAllCast as $castRow)
                 {
-                    if (count($castRow->find('.primary_photo')) === 0) {
+                    if ($this->count($castRow->find('.primary_photo')) === 0) {
                         continue;
                     }
                     $actor = [];
@@ -87,7 +87,7 @@ class HtmlPieces
 
                     $actorRow = $castRow->find('td')[1];
                     $actorLink = $actorRow->find('a');
-                    if (count($actorLink) > 0) {
+                    if ($this->count($actorLink) > 0) {
                         // Set actor name to text within link
                         $actor["actor"] = $actorLink->text;
                         $actor["actor_id"] = $this->extractImdbId($actorLink->href);
@@ -109,7 +109,7 @@ class HtmlPieces
             case "technical_specs":
                 $technical_specs = [];
                 $table = $dom->find($page, '.dataTable tr');
-                if (count($table) > 0) {
+                if ($this->count($table) > 0) {
                     foreach ($table as $row)
                     {
                         $row_title = $row->find('td')[0]->text(true);
@@ -129,14 +129,14 @@ class HtmlPieces
             case "companies":
                 $response = [];
                 $sections = $page->find(".findSection");
-                if (count($sections) > 0)
+                if ($this->count($sections) > 0)
                 {
                     foreach ($sections as $section)
                     {
                         $sectionName = @strtolower($section->find(".findSectionHeader")->text);
                         if ($sectionName === $element) {
                             $sectionRows = $section->find(".findList tr");
-                            if (count($sectionRows) > 0)
+                            if ($this->count($sectionRows) > 0)
                             {
                                 foreach ($sectionRows as $sectionRow)
                                 {
@@ -210,8 +210,9 @@ class HtmlPieces
      * @param array|string $item
      * @return string
      */
-    private function count($item) {
-        return (is_array($item) ? count($item) : strlen($item));
+    private function count($item)
+    {
+        return (is_countable($item) ? count($item) : (is_string($item) ? strlen($item) : 0));
     }
 
 }

@@ -54,7 +54,7 @@ class Dom
     private function emptyElement()
     {
         $dom = new \PHPHtmlParser\Dom;
-        $dom->load('<a src="" href="" data-video=""></a>');
+        $dom->load('<a emptyElement="true" src="" href="" data-video=""></a>');
         return $dom;
     }
 
