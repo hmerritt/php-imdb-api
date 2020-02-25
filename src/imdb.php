@@ -81,9 +81,12 @@ class Imdb
             }
         }
 
-        //  Check cache for film
-        if ($cache->has($filmId)) {
-            return $cache->get($filmId)->film;
+        //  If caching is enabled
+        if ($options["cache"]) {
+            //  Check cache for film
+            if ($cache->has($filmId)) {
+                return $cache->get($filmId)->film;
+            }
         }
 
         //  Load imdb film page and parse the dom
@@ -111,8 +114,11 @@ class Imdb
             $response->add("technical_specs",  []);
         }
 
-        //  Add result to the cache
-        $cache->add($filmId, $response->return());
+        //  If caching is enabled
+        if ($options["cache"]) {
+            //  Add result to the cache
+            $cache->add($filmId, $response->return());
+        }
 
         //  Return the response $store
         return $response->return();

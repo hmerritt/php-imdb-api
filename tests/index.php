@@ -8,13 +8,23 @@ require "../vendor/autoload.php";
 use hmerritt\Imdb;
 
 
-// Get url search param
-$q = $_GET["film"];
+//  Get url params
+$type = $_GET["type"];
+$query = $_GET["q"];
 
 // Initialise Imdb
-// Load film data
 $imdb = new Imdb();
-$film = $imdb->film($q);  // tt0816692  tt8633464
 
-// Return loaded film data
-echo json_encode($film, JSON_PRETTY_PRINT);
+switch($type)
+{
+	case "film":
+		$response = $imdb->film($query);
+		break;
+
+	case "search":
+		$response = $imdb->search($query);
+		break;
+}
+
+//  -> Return loaded film data
+echo json_encode($response, JSON_PRETTY_PRINT);

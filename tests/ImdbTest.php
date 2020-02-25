@@ -9,7 +9,7 @@ class ImdbTest extends TestCase {
     public function testFilm()
     {
         $imdb = new Imdb;
-        $film = $imdb->film('tt0816692');
+        $film = $imdb->film('tt0816692', [ 'cache' => false ]);
 
         $this->assertEquals('tt0816692', $film['id']);
         $this->assertEquals('Interstellar', $film['title']);
@@ -35,8 +35,9 @@ class ImdbTest extends TestCase {
     {
         $imdb = new Imdb;
         $film = $imdb->film('tt0065531', [
-            "curlHeaders" => ['Accept-Language: de-DE, de;q=0.5'],
-            "techSpecs" => false
+            'cache'       => false,
+            'curlHeaders' => ['Accept-Language: de-DE, de;q=0.5'],
+            'techSpecs'   => false,
         ]);
 
         $this->assertEquals('Vier im roten Kreis', $film['title']);
@@ -48,7 +49,7 @@ class ImdbTest extends TestCase {
         $imdb = new Imdb;
         $response = new Response;
 
-        $film = $imdb->film('ttest404');
+        $film = $imdb->film('ttest404', [ 'cache' => false ]);
         $search = $imdb->search('ttest404040404004', [ 'category' => 'test404' ]);
 
         $emptyResponse = [
