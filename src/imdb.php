@@ -52,6 +52,10 @@ class Imdb
         // -> handles what the api returns
         $response = new Response;
 
+        //  Initiate cache object
+        // -> handles storing/retrieving cached results
+        $cache = new Cache;
+
         //  Initiate dom object
         //  -> handles page scraping
         $dom = new Dom;
@@ -75,6 +79,11 @@ class Imdb
                 //  -> return default (empty) response
                 return $response->default('film');
             }
+        }
+
+        //  Check cache for film
+        if ($cache->has($filmId)) {
+            return $cache->get($filmId)->film;
         }
 
         //  Load imdb film page and parse the dom
@@ -101,6 +110,9 @@ class Imdb
         else {
             $response->add("technical_specs",  []);
         }
+
+        //  Add result to the cache
+        $cache->add($filmId, $response->return());
 
         //  Return the response $store
         return $response->return();
