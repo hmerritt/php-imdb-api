@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use hmerritt\Imdb;
+use hmerritt\Response;
 
 class ImdbTest extends TestCase {
 
@@ -40,6 +41,24 @@ class ImdbTest extends TestCase {
 
         $this->assertEquals('Vier im roten Kreis', $film['title']);
         $this->assertEquals(0, count($film['technical_specs']));
+    }
+
+    public function test404Page()
+    {
+        $imdb = new Imdb;
+        $response = new Response;
+
+        $film = $imdb->film('ttest404');
+        $search = $imdb->search('ttest404040404004', [ 'category' => 'test404' ]);
+
+        $emptyResponse = [
+            'film' => $response->default('film'),
+            'search' => $response->default('search'),
+        ];
+        $emptyResponse['film']['id'] = 'ttest404';
+
+        $this->assertEquals($emptyResponse['film'], $film);
+        $this->assertEquals($emptyResponse['search'], $search);
     }
 
 }
