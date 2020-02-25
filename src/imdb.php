@@ -80,7 +80,15 @@ class Imdb
         $response->add("poster", $htmlPieces->get($page, "poster"));
         $response->add("trailer", $htmlPieces->get($page, "trailer"));
         $response->add("cast", $htmlPieces->get($page, "cast"));
-        $response->add("technical_specs", $options["techSpecs"] ? $htmlPieces->get($page, "technical_specs") : "");
+
+        //  Technical specs
+        if ($options["techSpecs"]) {
+                $page_techSpecs = $dom->fetch($this->baseUrl."title/".$filmId.'/technical', $options);
+                $response->add("technical_specs", $htmlPieces->get($page_techSpecs, "technical_specs"));
+        }
+        else {
+            $response->add("technical_specs",  []);
+        }
 
         //  Return the response $store
         return $response->return();

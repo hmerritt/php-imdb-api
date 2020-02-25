@@ -19,7 +19,7 @@ class HtmlPieces
      * @param string $element
      * @return string
      */
-    public function get(object $page, string $element)
+    public function get(object $page, string $element, array $options = [])
     {
         //  Initiate dom object
         //  -> handles page scraping
@@ -87,13 +87,11 @@ class HtmlPieces
 
                     $actorRow = $castRow->find('td')[1];
                     $actorLink = $actorRow->find('a');
-                    if (count($actorLink) > 0)
-                    {
+                    if (count($actorLink) > 0) {
                         // Set actor name to text within link
                         $actor["actor"] = $actorLink->text;
                         $actor["actor_id"] = $this->extractImdbId($actorLink->href);
-                    } else
-                    {
+                    } else {
                         // No link found
                         // Set actor name to whatever is there
                         $actor["actor"] = $actorRow->text;
@@ -106,6 +104,24 @@ class HtmlPieces
                     array_push($cast, $actor);
                 }
                 return $cast;
+                break;
+
+            case "technical_specs":
+                $technical_specs = [];
+                $table = $dom->find($page, '.dataTable tr');
+                if (count($table) > 0) {
+                    foreach ($table as $row)
+                    {
+                        $row_title = $row->find('td')[0]->text(true);
+                        $row_value = str_replace("  ", " <br> ", $row->find('td')[1]->text(true));
+                        $row = [
+                            $this->strClean($row_title),
+                            $this->strClean($row_value)
+                        ];
+                        array_push($technical_specs, $row);
+                    }
+                }
+                return $technical_specs;
                 break;
 
             default:
