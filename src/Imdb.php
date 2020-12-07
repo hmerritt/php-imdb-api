@@ -149,10 +149,10 @@ class Imdb
 
         //  Encode search string as a standard URL string
         //  -> ' ' => '%20'
-        $searc_url = urlencode(urldecode($search));
+        $search_url = urlencode(urldecode($search));
 
         //  Load imdb search page and parse the dom
-        $page = $dom->fetch("https://www.imdb.com/find?q=$searc_url&s=".$options["category"], $options);
+        $page = $dom->fetch("https://www.imdb.com/find?q=$search_url&s=".$options["category"], $options);
 
         //  Add all search data to response $store
         $response->add("titles", $htmlPieces->get($page, "titles"));
