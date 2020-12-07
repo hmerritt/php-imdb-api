@@ -147,8 +147,12 @@ class Imdb
         //  -> handles finding specific content from the dom
         $htmlPieces = new HtmlPieces;
 
+        //  Encode search string as a standard URL string
+        //  -> ' ' => '%20'
+        $search_url = urlencode(urldecode($search));
+
         //  Load imdb search page and parse the dom
-        $page = $dom->fetch("https://www.imdb.com/find?q=$search&s=".$options["category"], $options);
+        $page = $dom->fetch("https://www.imdb.com/find?q=$search_url&s=".$options["category"], $options);
 
         //  Add all search data to response $store
         $response->add("titles", $htmlPieces->get($page, "titles"));
