@@ -27,7 +27,15 @@ class HtmlPieces
 
         switch ($element) {
             case "title":
-                $title = $dom->find($page, 'h1[data-testid=hero-title-block__title]')->text;
+                $patterns = [".title_wrapper h1", "h1[data-testid=hero-title-block__title]"];
+                $title = "";
+
+                foreach ($patterns as $pattern)
+                {
+                    $title = $dom->find($page, $pattern)->text;
+                    if ($this->count($title) > 0) break;
+                }
+
                 return $this->strClean($title);
                 break;
 
