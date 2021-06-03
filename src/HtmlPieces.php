@@ -34,8 +34,18 @@ class HtmlPieces
                 break;
 
             case "year":
-                $patterns = ["section section div div div ul li a", ".title_wrapper h1 #titleYear a"];
+                $patterns = ["section section div div div ul li a", ".title_wrapper h1 #titleYear a", ".title_wrapper .subtext a[title='See more release dates']"];
                 $year = $this->findMatchInPatterns($dom, $page, $patterns);
+
+                // Detect OLD IMDB + TV show
+                if ($this->count($year) > 4) {
+                    // Extract year from text
+                    // \d{4}.\d{4}
+                    $matchYear = preg_replace("/[^\d{4}-–\d{4}]/", "", $year);
+                    if ($this->count($matchYear) > 0) {
+                        $year = $matchYear;
+                    }
+                }
 
                 return $this->strClean($year);
                 break;
