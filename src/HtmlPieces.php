@@ -77,7 +77,7 @@ class HtmlPieces
                 break;
 
             case "rating":
-                $patterns = ["main div[data-testid=hero-title-block__aggregate-rating__score]", ".ratings_wrapper .ratingValue span[itemprop=ratingValue]"];
+                $patterns = ["main div[data-testid=hero-title-block__aggregate-rating__score] span", ".ratings_wrapper .ratingValue span[itemprop=ratingValue]"];
                 $rating = $this->findMatchInPatterns($dom, $page, $patterns);
 
                 return $this->strClean($rating);
