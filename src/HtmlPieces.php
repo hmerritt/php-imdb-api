@@ -28,25 +28,26 @@ class HtmlPieces
         switch ($element) {
             case "title":
                 $patterns = [".title_wrapper h1", "h1[data-testid=hero-title-block__title]"];
-                $title = "";
-
-                foreach ($patterns as $pattern)
-                {
-                    $title = $dom->find($page, $pattern)->text;
-                    if ($this->count($title) > 0) break;
-                }
+                $title = $this->findMatchInPatterns($dom, $page, $patterns);
 
                 return $this->strClean($title);
                 break;
 
             case "year":
-                $year = $dom->find($page, 'section section div div div ul li a')->text;
+                $patterns = [".title_wrapper h1 #titleYear a", "section section div div div ul li a"];
+                $year = $this->findMatchInPatterns($dom, $page, $patterns);
+
                 return $this->strClean($year);
                 break;
 
             case "length":
+                $patterns = [".subtext time", "section section div div div ul li"];
                 $length = "";
-                $iter = $dom->find($page, 'section section div div div ul li');
+
+                $length = $dom->find($page, $patterns[0])->text;
+                if ($this->count($length) > 0) return $this->strClean($length);
+
+                $iter = $dom->find($page, $patterns[1]);
                 if ($this->count($iter) === 0) return $length;
 
                 // Loop row below main title
@@ -68,28 +69,39 @@ class HtmlPieces
                 break;
 
             case "plot":
-                $plot = $dom->find($page, '.plot_summary .summary_text')->text;
+                $patterns = [".plot_summary .summary_text", "p[data-testid=plot] div"];
+                $plot = $this->findMatchInPatterns($dom, $page, $patterns);
+
                 return $this->strClean($plot);
                 break;
 
             case "rating":
-                $rating = $dom->find($page, '.ratings_wrapper .ratingValue span[itemprop=ratingValue]')->text;
+                $patterns = [".ratings_wrapper .ratingValue span[itemprop=ratingValue]", "div[data-testid=hero-title-block__aggregate-rating__score]"];
+                $rating = $this->findMatchInPatterns($dom, $page, $patterns);
+
                 return $this->strClean($rating);
                 break;
 
             case "rating_votes":
-                $rating_votes = $dom->find($page, '.ratings_wrapper span[itemprop=ratingCount]')->text;
+                $patterns = [".ratings_wrapper span[itemprop=ratingCount]", "div[class*=TotalRatingAmount]"];
+                $rating_votes = $this->findMatchInPatterns($dom, $page, $patterns);
+
                 return preg_replace("/[^0-9 ]/", "", $this->strClean($rating_votes));
                 break;
 
             case "poster":
-                $poster = $dom->find($page, '.poster img')->src;
+                $patterns = [".poster img", ".ipc-poster img"];
+                $poster = $this->findMatchInPatterns($dom, $page, $patterns, "src");
                 $poster = preg_match('/@/', $poster) ? preg_split('~@(?=[^@]*$)~', $poster)[0] . "@.jpg" : $poster;
+
                 return $this->strClean($poster);
                 break;
 
             case "trailer":
-                $trailerLink = $page->find('section section div section section div div div div div a[aria-label^=Watch]');
+                // section section div section section div div div div div a[aria-label^=Watch]
+                // div a[class*=hero-media][aria-label^=Watch]
+                $patterns = [".slate a[data-video]", "div a[aria-label^=Watch]"];
+                $trailerLink = $dom->find($page, $patterns[1]);
 
                 if ($this->count($trailerLink)) {
                     $href = $trailerLink->getAttribute("href");
@@ -174,7 +186,7 @@ class HtmlPieces
             case "names":
             case "companies":
                 $response = [];
-                $sections = $page->find(".findSection");
+                $sections = $dom->find($page, ".findSection");
                 if ($this->count($sections) > 0)
                 {
                     foreach ($sections as $section)
@@ -215,6 +227,32 @@ class HtmlPieces
             default:
                 return "";
         }
+    }
+
+    /**
+     * Attempt to extract text using an array of match patterns
+     *
+     * @param  object $page
+     * @param  array  $patterns
+     * @return string 
+     */
+    public function findMatchInPatterns(object $dom, object $page, array $patterns, string $type = "text")
+    {
+        $str = "";
+        foreach ($patterns as $pattern)
+        {
+            if ($type === "src") {
+                $el = $dom->find($page, $pattern);
+                $str = $this->count($el) > 0 ? $el->getAttribute("src") : "";
+            } elseif ($type === "href") {
+                $el = $dom->find($page, $pattern);
+                $str = $this->count($el) > 0 ? $el->getAttribute("href") : "";
+            } else {
+                $str = $dom->find($page, $pattern)->text;
+            }
+            if ($this->count($str) > 0) break;
+        }
+        return $str;
     }
 
     /**
