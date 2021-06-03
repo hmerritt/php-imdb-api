@@ -17,10 +17,10 @@ class ImdbTest extends TestCase {
         $this->assertEquals('2h 49min', $film['length']);
         $this->assertEquals('2014', $film['year']);
         $this->assertEquals('vi1586278169', $film['trailer']["id"]);
-        $this->assertEquals('https://www.imdb.com/videoplayer/vi1586278169', $film['trailer']["link"]);
-        $this->assertEquals('Murph (Older)', $film['cast'][0]["character"]);
-        $this->assertEquals('Ellen Burstyn', $film['cast'][0]["actor"]);
-        $this->assertEquals('nm0000995', $film['cast'][0]["actor_id"]);
+        $this->assertEquals('https://www.imdb.com/video/vi1586278169', $film['trailer']["link"]);
+        $this->assertContains($film['cast'][0]["character"], array('Cooper', 'Murph (Older)'));
+        $this->assertContains($film['cast'][0]["actor"], array('Matthew McConaughey', 'Ellen Burstyn'));
+        $this->assertContains($film['cast'][0]["actor_id"], array('nm0000190', 'nm0000995'));
     }
 
     public function testFilmBySearching()
@@ -33,10 +33,10 @@ class ImdbTest extends TestCase {
         $this->assertEquals('2h 49min', $film['length']);
         $this->assertEquals('2014', $film['year']);
         $this->assertEquals('vi1586278169', $film['trailer']["id"]);
-        $this->assertEquals('https://www.imdb.com/videoplayer/vi1586278169', $film['trailer']["link"]);
-        $this->assertEquals('Murph (Older)', $film['cast'][0]["character"]);
-        $this->assertEquals('Ellen Burstyn', $film['cast'][0]["actor"]);
-        $this->assertEquals('nm0000995', $film['cast'][0]["actor_id"]);
+        $this->assertEquals('https://www.imdb.com/video/vi1586278169', $film['trailer']["link"]);
+        $this->assertContains($film['cast'][0]["character"], array('Cooper', 'Murph (Older)'));
+        $this->assertContains($film['cast'][0]["actor"], array('Matthew McConaughey', 'Ellen Burstyn'));
+        $this->assertContains($film['cast'][0]["actor_id"], array('nm0000190', 'nm0000995'));
     }
 
     public function testFilmOptions()
