@@ -27,27 +27,28 @@ class HtmlPieces
 
         switch ($element) {
             case "title":
-                $patterns = [".title_wrapper h1", "h1[data-testid=hero-title-block__title]"];
+                $patterns = ["h1[data-testid=hero-title-block__title]", ".title_wrapper h1"];
                 $title = $this->findMatchInPatterns($dom, $page, $patterns);
 
                 return $this->strClean($title);
                 break;
 
             case "year":
-                $patterns = [".title_wrapper h1 #titleYear a", "section section div div div ul li a"];
+                $patterns = ["section section div div div ul li a", ".title_wrapper h1 #titleYear a"];
                 $year = $this->findMatchInPatterns($dom, $page, $patterns);
 
                 return $this->strClean($year);
                 break;
 
             case "length":
-                $patterns = [".subtext time", "section section div div div ul li"];
+                $patterns = ["section section div div div ul li", ".subtext time"];
                 $length = "";
 
-                $length = $dom->find($page, $patterns[0])->text;
+                $length = $dom->find($page, $patterns[1])->text;
                 if ($this->count($length) > 0) return $this->strClean($length);
 
-                $iter = $dom->find($page, $patterns[1]);
+                $length = "";
+                $iter = $dom->find($page, $patterns[0]);
                 if ($this->count($iter) === 0) return $length;
 
                 // Loop row below main title
@@ -69,28 +70,29 @@ class HtmlPieces
                 break;
 
             case "plot":
-                $patterns = [".plot_summary .summary_text", "p[data-testid=plot] div"];
+                $patterns = ["p[data-testid=plot] div", ".plot_summary .summary_text"];
                 $plot = $this->findMatchInPatterns($dom, $page, $patterns);
 
                 return $this->strClean($plot);
                 break;
 
             case "rating":
-                $patterns = [".ratings_wrapper .ratingValue span[itemprop=ratingValue]", "div[data-testid=hero-title-block__aggregate-rating__score]"];
+                $patterns = ["main div[data-testid=hero-title-block__aggregate-rating__score]", ".ratings_wrapper .ratingValue span[itemprop=ratingValue]"];
                 $rating = $this->findMatchInPatterns($dom, $page, $patterns);
 
                 return $this->strClean($rating);
                 break;
 
             case "rating_votes":
-                $patterns = [".ratings_wrapper span[itemprop=ratingCount]", "div[class*=TotalRatingAmount]"];
+                $patterns = ["main div[class*=TotalRatingAmount]", ".ratings_wrapper span[itemprop=ratingCount]"];
                 $rating_votes = $this->findMatchInPatterns($dom, $page, $patterns);
+                $rating_votes = $this->unwrapFormattedNumber($rating_votes);
 
-                return preg_replace("/[^0-9 ]/", "", $this->strClean($rating_votes));
+                return preg_replace("/[^0-9]/", "", $this->strClean($rating_votes));
                 break;
 
             case "poster":
-                $patterns = [".poster img", ".ipc-poster img"];
+                $patterns = [".ipc-poster .ipc-media img", ".poster img"];
                 $poster = $this->findMatchInPatterns($dom, $page, $patterns, "src");
                 $poster = preg_match('/@/', $poster) ? preg_split('~@(?=[^@]*$)~', $poster)[0] . "@.jpg" : $poster;
 
@@ -100,13 +102,18 @@ class HtmlPieces
             case "trailer":
                 // section section div section section div div div div div a[aria-label^=Watch]
                 // div a[class*=hero-media][aria-label^=Watch]
-                $patterns = [".slate a[data-video]", "div a[aria-label^=Watch]"];
-                $trailerLink = $dom->find($page, $patterns[1]);
+                $patterns = ["div a[aria-label^=Watch]", ".slate a[data-video]"];
+                $trailerLinkOld = $dom->find($page, $patterns[1]);
+                $trailerLink = $dom->find($page, $patterns[0]);
 
                 if ($this->count($trailerLink)) {
                     $href = $trailerLink->getAttribute("href");
                     preg_match("/\/video\/(vi[a-zA-Z0-9]+)/", $href, $matches);
                     $trailerId = $this->count($matches) > 1 ? $matches[1] : "";
+                    $trailerLink = $this->count($trailerId) ? "https://www.imdb.com/video/".$trailerId : "";
+
+                } elseif ($this->count($trailerLinkOld)) {
+                    $trailerId = $this->count($trailerLinkOld) ? $trailerLinkOld->getAttribute("data-video") : "";
                     $trailerLink = $this->count($trailerId) ? "https://www.imdb.com/video/".$trailerId : "";
                 } else {
                     $trailerId   = "";
@@ -121,45 +128,82 @@ class HtmlPieces
 
             case "cast":
                 $cast = [];
+                $findAllCastOld = $dom->find($page, 'table.cast_list tr');
                 $findAllCast = $dom->find($page, 'section.title-cast div.title-cast__grid div');
-                foreach ($findAllCast as $castRow)
-                {
-                    if ($this->count($castRow->find('img')) === 0) {
-                        continue;
-                    }
 
-                    $actor = [];
-                    $actor["actor"] = "";
-                    $actor["actor_id"] = "";
-                    $actor["character"] = "";
-
-                    // Actor
-                    $actorLink = $castRow->find('a[data-testid=title-cast-item__actor]');
-                    if ($this->count($actorLink)) {
-                        $actor["actor"] = $actorLink->text;
-                    }
-
-                    // Actor ID
-                    $link = $castRow->find('a');
-                    if ($this->count($link)) {
-                        $href = $link->getAttribute("href");
-                        preg_match("/(nm[0-9]+)/", $href, $matches);
-                        if ($this->count($matches)) {
-                            $actor["actor_id"] = $matches[0];
+                // Use $findAllCastOld
+                if ($this->count($findAllCastOld)) {
+                    foreach ($findAllCastOld as $castRow)
+                    {
+                        if ($this->count($castRow->find('.primary_photo')) === 0) {
+                            continue;
                         }
+                        $actor = [];
+
+                        $characterLink = $castRow->find('.character a');
+                        $actor["character"] = count($characterLink) ? $characterLink->text : $dom->find($castRow, '.character')->text;
+
+                        $actorRow = $castRow->find('td')[1];
+                        $actorLink = $actorRow->find('a');
+                        if ($this->count($actorLink) > 0) {
+                            // Set actor name to text within link
+                            $actor["actor"] = $actorLink->text;
+                            $actor["actor_id"] = $this->extractImdbId($actorLink->href);
+                        } else {
+                            // No link found
+                            // Set actor name to whatever is there
+                            $actor["actor"] = $actorRow->text;
+                        }
+
+                        $actor["character"] = $this->strClean($actor["character"]);
+                        $actor["actor"]     = $this->strClean($actor["actor"]);
+                        $actor["actor_id"]  = $this->strClean($actor["actor_id"]);
+
+                        array_push($cast, $actor);
                     }
+                }
 
-                    // Character
-                    $characterLink = $castRow->find('a[data-testid=cast-item-characters-link]');
-                    if ($this->count($characterLink)) {
-                        $actor["character"] = $characterLink->text;
+                // Use 'new' $findAllCast
+                if ($this->count($findAllCast)) {
+                    foreach ($findAllCast as $castRow)
+                    {
+                        if ($this->count($castRow->find('img')) === 0) {
+                            continue;
+                        }
+    
+                        $actor = [];
+                        $actor["actor"] = "";
+                        $actor["actor_id"] = "";
+                        $actor["character"] = "";
+    
+                        // Actor
+                        $actorLink = $castRow->find('a[data-testid=title-cast-item__actor]');
+                        if ($this->count($actorLink)) {
+                            $actor["actor"] = $actorLink->text;
+                        }
+    
+                        // Actor ID
+                        $link = $castRow->find('a');
+                        if ($this->count($link)) {
+                            $href = $link->getAttribute("href");
+                            preg_match("/(nm[0-9]+)/", $href, $matches);
+                            if ($this->count($matches)) {
+                                $actor["actor_id"] = $matches[0];
+                            }
+                        }
+    
+                        // Character
+                        $characterLink = $castRow->find('a[data-testid=cast-item-characters-link]');
+                        if ($this->count($characterLink)) {
+                            $actor["character"] = $characterLink->text;
+                        }
+    
+                        $actor["character"] = $this->strClean($actor["character"]);
+                        $actor["actor"]     = $this->strClean($actor["actor"]);
+                        $actor["actor_id"]  = $this->strClean($actor["actor_id"]);
+    
+                        array_push($cast, $actor);
                     }
-
-                    $actor["character"] = $this->strClean($actor["character"]);
-                    $actor["actor"]     = $this->strClean($actor["actor"]);
-                    $actor["actor_id"]  = $this->strClean($actor["actor_id"]);
-
-                    array_push($cast, $actor);
                 }
                 return $cast;
                 break;
@@ -253,6 +297,36 @@ class HtmlPieces
             if ($this->count($str) > 0) break;
         }
         return $str;
+    }
+
+    /**
+     * Unwrap formatted number to original int - 1.5K -> 1500
+     *
+     * @param string $str
+     * @return string
+     */
+    public function unwrapFormattedNumber($str)
+    {
+        $unwrap = $str;
+        $divisors = ["K", "M", "B"];
+        $divisorMap = [
+            "K" => 1000,
+            "M" => 1000000,
+            "B" => 1000000000
+        ];
+
+        $strDivisor = substr($str, -1);
+        if (in_array($strDivisor, $divisors)) {
+            // Remove last charactor
+            $strNum = substr($str, 0, -1);
+            $num = floatval($strNum);
+
+            $numActual = $num * $divisorMap[$strDivisor];
+
+            $unwrap = strval($numActual);
+        }
+
+        return $unwrap;
     }
 
     /**
