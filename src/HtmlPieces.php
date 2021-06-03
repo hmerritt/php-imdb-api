@@ -27,17 +27,35 @@ class HtmlPieces
 
         switch ($element) {
             case "title":
-                $title = $dom->find($page, '.title_wrapper h1')->text;
+                $title = $dom->find($page, 'h1[data-testid=hero-title-block__title]')->text;
                 return $this->strClean($title);
                 break;
 
             case "year":
-                $year = $dom->find($page, '.title_wrapper h1 #titleYear a')->text;
+                $year = $dom->find($page, 'section section div div div ul li a')->text;
                 return $this->strClean($year);
                 break;
 
             case "length":
-                $length = $dom->find($page, '.subtext time')->text;
+                $length = "";
+                $iter = $dom->find($page, 'section section div div div ul li');
+                if ($this->count($iter) === 0) return $length;
+
+                // Loop row below main title
+                // 2014 · 12A · 2h 49min
+                foreach ($iter as $iterRow) {
+                    // Get row text
+                    $rowText = $iterRow->text;
+                    if ($this->count($rowText) === 0) continue;
+
+                    // Attempt to match length (runtime) from text
+                    $isMatch = preg_match("/([0-9]+[h|m] [0-9]+[h|m])|([0-9]+[h|m])/", $rowText);
+
+                    if ($isMatch > 0) {
+                        $length = $rowText;
+                    }
+                }
+
                 return $this->strClean($length);
                 break;
 
@@ -63,9 +81,18 @@ class HtmlPieces
                 break;
 
             case "trailer":
-                $trailerLink = $page->find('.slate a[data-video]');
-                $trailerId = $this->count($trailerLink) ? $trailerLink->getAttribute("data-video") : "";
-                $trailerLink = $this->count($trailerId) ? "https://www.imdb.com/videoplayer/".$trailerId : "";
+                $trailerLink = $page->find('section section div section section div div div div div a[aria-label^=Watch]');
+
+                if ($this->count($trailerLink)) {
+                    $href = $trailerLink->getAttribute("href");
+                    preg_match("/\/video\/(vi[a-zA-Z0-9]+)/", $href, $matches);
+                    $trailerId = $this->count($matches) > 1 ? $matches[1] : "";
+                    $trailerLink = $this->count($trailerId) ? "https://www.imdb.com/video/".$trailerId : "";
+                } else {
+                    $trailerId   = "";
+                    $trailerLink = "";
+                }
+
                 return [
                     "id" => $trailerId,
                     "link" => $trailerLink
@@ -74,27 +101,38 @@ class HtmlPieces
 
             case "cast":
                 $cast = [];
-                $findAllCast = $dom->find($page, 'table.cast_list tr');
+                $findAllCast = $dom->find($page, 'section.title-cast div.title-cast__grid div');
                 foreach ($findAllCast as $castRow)
                 {
-                    if ($this->count($castRow->find('.primary_photo')) === 0) {
+                    if ($this->count($castRow->find('img')) === 0) {
                         continue;
                     }
+
                     $actor = [];
+                    $actor["actor"] = "";
+                    $actor["actor_id"] = "";
+                    $actor["character"] = "";
 
-                    $characterLink = $castRow->find('.character a');
-                    $actor["character"] = count($characterLink) ? $characterLink->text : $dom->find($castRow, '.character')->text;
-
-                    $actorRow = $castRow->find('td')[1];
-                    $actorLink = $actorRow->find('a');
-                    if ($this->count($actorLink) > 0) {
-                        // Set actor name to text within link
+                    // Actor
+                    $actorLink = $castRow->find('a[data-testid=title-cast-item__actor]');
+                    if ($this->count($actorLink)) {
                         $actor["actor"] = $actorLink->text;
-                        $actor["actor_id"] = $this->extractImdbId($actorLink->href);
-                    } else {
-                        // No link found
-                        // Set actor name to whatever is there
-                        $actor["actor"] = $actorRow->text;
+                    }
+
+                    // Actor ID
+                    $link = $castRow->find('a');
+                    if ($this->count($link)) {
+                        $href = $link->getAttribute("href");
+                        preg_match("/(nm[0-9]+)/", $href, $matches);
+                        if ($this->count($matches)) {
+                            $actor["actor_id"] = $matches[0];
+                        }
+                    }
+
+                    // Character
+                    $characterLink = $castRow->find('a[data-testid=cast-item-characters-link]');
+                    if ($this->count($characterLink)) {
+                        $actor["character"] = $characterLink->text;
                     }
 
                     $actor["character"] = $this->strClean($actor["character"]);
