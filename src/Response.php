@@ -69,6 +69,7 @@ class Response
                 $response = [
                     "id" => "",
                     "title" => "",
+                    "genre" => "",
                     "year" => "",
                     "length" => "",
                     "plot" => "",

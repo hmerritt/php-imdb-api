@@ -14,13 +14,17 @@ class ImdbTest extends TestCase {
 
         $this->assertEquals('tt0816692', $film['id']);
         $this->assertEquals('Interstellar', $film['title']);
-        $this->assertEquals('2h 49min', $film['length']);
+        $this->assertEquals('Adventure, Drama, Sci-Fi', $film['genre']);
+        $this->assertEquals('2h 49m', $film['length']);
         $this->assertEquals('2014', $film['year']);
+        $this->assertEquals("A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.", $film['plot']);
+        $this->assertEquals('8.6', $film['rating']);
         $this->assertEquals('vi1586278169', $film['trailer']["id"]);
         $this->assertEquals('https://www.imdb.com/video/vi1586278169', $film['trailer']["link"]);
-        $this->assertContains($film['cast'][0]["character"], array('Cooper', 'Murph (Older)'));
-        $this->assertContains($film['cast'][0]["actor"], array('Matthew McConaughey', 'Ellen Burstyn'));
-        $this->assertContains($film['cast'][0]["actor_id"], array('nm0000190', 'nm0000995'));
+        $this->assertContains($film['cast'][0]["character"], ['as Cooper']);
+        $this->assertContains($film['cast'][0]["actor"], ['Matthew McConaughey']);
+        $this->assertContains($film['cast'][0]["actor_id"], ['nm0000190']);
+        $this->assertContains($film['cast'][0]["avatar"], ['https://m.media-amazon.com/images/M/MV5BMTg0MDc3ODUwOV5BMl5BanBnXkFtZTcwMTk2NjY4Nw@@._V1_QL75_UX140_CR0,21,140,140_.jpg']);
     }
 
     public function testFilmBySearching()
@@ -30,13 +34,17 @@ class ImdbTest extends TestCase {
 
         $this->assertEquals('tt0816692', $film['id']);
         $this->assertEquals('Interstellar', $film['title']);
-        $this->assertEquals('2h 49min', $film['length']);
+        $this->assertEquals('Adventure, Drama, Sci-Fi', $film['genre']);
+        $this->assertEquals('2h 49m', $film['length']);
         $this->assertEquals('2014', $film['year']);
+        $this->assertEquals("A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.", $film['plot']);
+        $this->assertEquals('8.6', $film['rating']);
         $this->assertEquals('vi1586278169', $film['trailer']["id"]);
         $this->assertEquals('https://www.imdb.com/video/vi1586278169', $film['trailer']["link"]);
-        $this->assertContains($film['cast'][0]["character"], array('Cooper', 'Murph (Older)'));
-        $this->assertContains($film['cast'][0]["actor"], array('Matthew McConaughey', 'Ellen Burstyn'));
-        $this->assertContains($film['cast'][0]["actor_id"], array('nm0000190', 'nm0000995'));
+        $this->assertContains($film['cast'][0]["character"], ['as Cooper']);
+        $this->assertContains($film['cast'][0]["actor"], ['Matthew McConaughey']);
+        $this->assertContains($film['cast'][0]["actor_id"], ['nm0000190']);
+        $this->assertContains($film['cast'][0]["avatar"], ['https://m.media-amazon.com/images/M/MV5BMTg0MDc3ODUwOV5BMl5BanBnXkFtZTcwMTk2NjY4Nw@@._V1_QL75_UX140_CR0,21,140,140_.jpg']);
     }
 
     public function testFilmOptions()

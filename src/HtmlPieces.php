@@ -32,6 +32,19 @@ class HtmlPieces
 
                 return $this->strClean($title);
                 break;
+                
+            case "genre":
+                $allGenres = $dom->find($page, "div[data-testid=genres] a");
+                $genres = [];
+
+                if ($this->count($allGenres)) {
+                    foreach ($allGenres as $genre) {
+                        $genres[] = $genre->find('span')->text();
+                    }
+                }
+
+                return $this->strClean(implode(", ", $genres));
+                break;
 
             case "year":
                 $patterns = ["section section div div div ul li a", ".title_wrapper h1 #titleYear a", ".title_wrapper .subtext a[title='See more release dates']"];
@@ -80,14 +93,14 @@ class HtmlPieces
                 break;
 
             case "plot":
-                $patterns = ["p[data-testid=plot] div", ".plot_summary .summary_text"];
+                $patterns = ["p[data-testid=plot] > span[data-testid=plot-xl]", ".plot_summary .summary_text"];
                 $plot = $this->findMatchInPatterns($dom, $page, $patterns);
 
                 return $this->strClean($plot);
                 break;
 
             case "rating":
-                $patterns = ["main div[data-testid=hero-title-block__aggregate-rating__score] span", ".ratings_wrapper .ratingValue span[itemprop=ratingValue]"];
+                $patterns = ["main div[data-testid=hero-rating-bar__aggregate-rating__score] span", ".ratings_wrapper .ratingValue span[itemprop=ratingValue]"];
                 $rating = $this->findMatchInPatterns($dom, $page, $patterns);
 
                 return $this->strClean($rating);
@@ -139,7 +152,7 @@ class HtmlPieces
             case "cast":
                 $cast = [];
                 $findAllCastOld = $dom->find($page, 'table.cast_list tr');
-                $findAllCast = $dom->find($page, 'section.title-cast div.title-cast__grid div');
+                $findAllCast = $dom->find($page, 'section[data-testid=title-cast] div.title-cast__grid div.ipc-sub-grid div');
 
                 // Use $findAllCastOld
                 if ($this->count($findAllCastOld)) {
@@ -183,6 +196,7 @@ class HtmlPieces
     
                         $actor = [];
                         $actor["actor"] = "";
+                        $actor["avatar"] = "";
                         $actor["actor_id"] = "";
                         $actor["character"] = "";
     
@@ -190,6 +204,12 @@ class HtmlPieces
                         $actorLink = $castRow->find('a[data-testid=title-cast-item__actor]');
                         if ($this->count($actorLink)) {
                             $actor["actor"] = $actorLink->text;
+                        }
+
+                        // Avatar
+                        $actorAvatar = $castRow->find('img.ipc-image');
+                        if ($this->count($actorAvatar)) {
+                            $actor["avatar"] = $actorAvatar->getAttribute('src');
                         }
     
                         // Actor ID
@@ -203,13 +223,14 @@ class HtmlPieces
                         }
     
                         // Character
-                        $characterLink = $castRow->find('a[data-testid=cast-item-characters-link]');
+                        $characterLink = $castRow->find('span[data-testid=cast-item-characters-with-as]');
                         if ($this->count($characterLink)) {
                             $actor["character"] = $characterLink->text;
                         }
     
                         $actor["character"] = $this->strClean($actor["character"]);
                         $actor["actor"]     = $this->strClean($actor["actor"]);
+                        $actor["avatar"]    = $this->strClean($actor["avatar"]);
                         $actor["actor_id"]  = $this->strClean($actor["actor_id"]);
     
                         array_push($cast, $actor);
@@ -369,7 +390,7 @@ class HtmlPieces
      */
     public function strClean($string)
     {
-        return empty($string) ? "" : str_replace(chr(194).chr(160), '', html_entity_decode(trim($string)));
+        return empty($string) ? "" : str_replace(chr(194).chr(160), '', html_entity_decode(trim($string), ENT_QUOTES));
     }
 
     /**
