@@ -28,6 +28,12 @@ jobs:
             - run: composer install --no-interaction
 
             # run tests with phpunit or codecept
-            - run: mkdir -p build/logs
+            - run: mkdir -p ./build/logs
             - run: composer test
-            - run: php vendor/bin/php-coveralls -v
+            - run: php ./vendor/bin/php-coveralls -v
+
+workflows:
+    version: 2
+    test:
+        jobs:
+            - test
