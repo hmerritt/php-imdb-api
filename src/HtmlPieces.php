@@ -197,6 +197,7 @@ class HtmlPieces
                         $actor = [];
                         $actor["actor"] = "";
                         $actor["avatar"] = "";
+                        $actor["avatar_hq"] = "";
                         $actor["actor_id"] = "";
                         $actor["character"] = "";
     
@@ -210,6 +211,11 @@ class HtmlPieces
                         $actorAvatar = $castRow->find('img.ipc-image');
                         if ($this->count($actorAvatar)) {
                             $actor["avatar"] = $actorAvatar->getAttribute('src');
+                            $actor["avatar_hq"] = preg_match('/@/', $actor["avatar"]) ? preg_split('~@(?=[^@]*$)~', $actor["avatar"])[0] . "@.jpg" : $actor["avatar"];
+
+                            if ($actor["avatar"] == $actor["avatar_hq"]) {
+                                $actor["avatar_hq"] = preg_match('/\.\_/', $actor["avatar_hq"]) ? preg_split('/\.\_.*/', $actor["avatar_hq"])[0] . ".jpg" : $actor["avatar_hq"];
+                            }
                         }
     
                         // Actor ID
