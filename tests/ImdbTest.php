@@ -14,7 +14,9 @@ class ImdbTest extends TestCase {
 
         $this->assertEquals('tt0816692', $film['id']);
         $this->assertEquals('Interstellar', $film['title']);
-        $this->assertEquals('Adventure, Drama, Sci-Fi', $film['genre']);
+        $this->assertEquals('Adventure', $film['genres'][0]);
+        $this->assertEquals('Drama', $film['genres'][1]);
+        $this->assertEquals('Sci-Fi', $film['genres'][2]);
         $this->assertEquals('2h 49m', $film['length']);
         $this->assertEquals('2014', $film['year']);
         $this->assertEquals("A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.", $film['plot']);
@@ -34,7 +36,9 @@ class ImdbTest extends TestCase {
 
         $this->assertEquals('tt0816692', $film['id']);
         $this->assertEquals('Interstellar', $film['title']);
-        $this->assertEquals('Adventure, Drama, Sci-Fi', $film['genre']);
+        $this->assertEquals('Adventure', $film['genres'][0]);
+        $this->assertEquals('Drama', $film['genres'][1]);
+        $this->assertEquals('Sci-Fi', $film['genres'][2]);
         $this->assertEquals('2h 49m', $film['length']);
         $this->assertEquals('2014', $film['year']);
         $this->assertEquals("A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.", $film['plot']);
