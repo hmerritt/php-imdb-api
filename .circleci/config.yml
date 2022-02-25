@@ -5,20 +5,17 @@ version: 2
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-    build:
+    test:
         # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
         # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
         docker:
             # Specify the version you desire here
-            - image: circleci/php:8.1-node-browsers
+            - image: cimg/php:8.1.2
 
         # Add steps to the job
         # See: https://circleci.com/docs/2.0/configuration-reference/#steps
         steps:
             - checkout
-
-            - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
-            - run: sudo docker-php-ext-install zip
 
             # Download and cache dependencies
             - restore_cache:
@@ -28,7 +25,7 @@ jobs:
                       # fallback to using the latest cache if no exact match is found
                       - v1-dependencies-
 
-            - run: composer install -n --prefer-dist
+            - run: composer install --no-interaction
 
             # run tests with phpunit or codecept
             - run: mkdir -p build/logs
