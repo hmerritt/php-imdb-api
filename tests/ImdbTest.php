@@ -45,6 +45,7 @@ class ImdbTest extends TestCase {
         $this->assertContains($film['cast'][0]["actor"], ['Matthew McConaughey']);
         $this->assertContains($film['cast'][0]["actor_id"], ['nm0000190']);
         $this->assertContains($film['cast'][0]["avatar"], ['https://m.media-amazon.com/images/M/MV5BMTg0MDc3ODUwOV5BMl5BanBnXkFtZTcwMTk2NjY4Nw@@._V1_QL75_UX140_CR0,21,140,140_.jpg']);
+        $this->assertContains($film['cast'][0]["avatar_hq"], ['https://m.media-amazon.com/images/M/MV5BMTg0MDc3ODUwOV5BMl5BanBnXkFtZTcwMTk2NjY4Nw@@.jpg']);
     }
 
     public function testFilmOptions()
