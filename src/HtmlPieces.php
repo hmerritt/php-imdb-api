@@ -54,7 +54,7 @@ class HtmlPieces
                 if ($this->count($year) > 4) {
                     // Extract year from text
                     // \d{4}.\d{4}
-                    $matchYear = preg_replace("/[^\d{4}-–\d{4}]/", "", $year);
+                    $matchYear = preg_replace("/[^\d{4}--\d{4}]/", "", $year);
                     if ($this->count($matchYear) > 0) {
                         $year = $matchYear;
                     }
