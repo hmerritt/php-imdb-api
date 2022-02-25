@@ -93,21 +93,21 @@ class HtmlPieces
                 break;
 
             case "plot":
-                $patterns = ["p[data-testid=plot] > span[data-testid=plot-xl]", ".plot_summary .summary_text"];
+                $patterns = ["p[data-testid=plot] > span[data-testid=plot-xl]", "[data-testid=plot-xl]", ".plot_summary .summary_text"];
                 $plot = $this->findMatchInPatterns($dom, $page, $patterns);
 
                 return $this->strClean($plot);
                 break;
 
             case "rating":
-                $patterns = ["main div[data-testid=hero-rating-bar__aggregate-rating__score] span", ".ratings_wrapper .ratingValue span[itemprop=ratingValue]"];
+                $patterns = ["[data-testid=hero-rating-bar__aggregate-rating__score] > span", ".ratings_wrapper .ratingValue span[itemprop=ratingValue]"];
                 $rating = $this->findMatchInPatterns($dom, $page, $patterns);
 
                 return $this->strClean($rating);
                 break;
 
             case "rating_votes":
-                $patterns = ["main div[class*=TotalRatingAmount]", ".ratings_wrapper span[itemprop=ratingCount]"];
+                $patterns = ["[class*=TotalRatingAmount]", ".ratings_wrapper span[itemprop=ratingCount]"];
                 $rating_votes = $this->findMatchInPatterns($dom, $page, $patterns);
                 $rating_votes = $this->unwrapFormattedNumber($rating_votes);
 
