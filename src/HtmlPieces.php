@@ -39,11 +39,11 @@ class HtmlPieces
 
                 if ($this->count($allGenres)) {
                     foreach ($allGenres as $genre) {
-                        $genres[] = $genre->find('span')->text();
+                        $genres[] = $this->strClean($genre->find('span')->text());
                     }
                 }
 
-                return $this->strClean(implode(", ", $genres));
+                return $genres;
                 break;
 
             case "year":
