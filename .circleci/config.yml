@@ -25,12 +25,22 @@ jobs:
                       # fallback to using the latest cache if no exact match is found
                       - v1-dependencies-
 
-            - run: composer install --no-interaction
+            - run:
+                  name: Setup & install dependencies
+                  command: |
+                      composer install --no-interaction
 
-            # run tests with phpunit or codecept
-            - run: mkdir -p ./build/logs
-            - run: composer test
-            - run: php ./vendor/bin/php-coveralls -v
+            - run:
+                  name: Enable PCOV, disable Xdebug
+                  command: |
+                      mkdir -p ./build/logs
+                      sudo pecl install pcov
+
+            - run:
+                  name: Tests
+                  command: |
+                      composer test
+                  #   php ./vendor/bin/php-coveralls -v
 
 workflows:
     version: 2
