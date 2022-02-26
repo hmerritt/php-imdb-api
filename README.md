@@ -1,25 +1,21 @@
 # PHP IMDB API
 
 [![Latest Stable Version](https://poser.pugx.org/hmerritt/imdb-api/v/stable)](https://packagist.org/packages/hmerritt/imdb-api)
-[![Build Status](https://travis-ci.org/hmerritt/php-imdb-api.svg?branch=master)](https://travis-ci.org/hmerritt/php-imdb-api)
+[![CircleCI](https://circleci.com/gh/hmerritt/php-imdb-api/tree/master.svg?style=svg)](https://circleci.com/gh/hmerritt/php-imdb-api/tree/master)
 [![Coverage Status](https://coveralls.io/repos/github/hmerritt/php-imdb-api/badge.svg?branch=master)](https://coveralls.io/github/hmerritt/php-imdb-api?branch=master)
 
 PHP IMDB-API that can fetch film data and search results.
 
-
-
-
 ## Install
+
 Install the latest version using [composer](https://getcomposer.org/).
 
 ```
 $ composer require hmerritt/imdb-api
 ```
 
-
-
-
 ## Usage
+
 ```php
 // Assuming you installed from Composer:
 require "vendor/autoload.php";
@@ -36,15 +32,14 @@ $imdb->search("Apocalypse");
 $imdb->film("tt0816692");
 ```
 
-
 ### Options
 
-| Name          	| Type   	| Default Value                         	| Description                                                                                   	|
-|---------------	|--------	|---------------------------------------	|-----------------------------------------------------------------------------------------------	|
-| `curlHeaders` 	| array  	| `['Accept-Language: en-US,en;q=0.5']` 	| Custom headers can be passed to `cURL` when fetching the IMDB page                            	|
-| `cache`       	| bool   	| `true`                                	| Caches film data to speed-up future requests for the same film                                	|
-| `techSpecs`   	| bool   	| `true`                                	| Loads a films technical specifications (this will take longer as it makes a separate request) 	|
-| `category`    	| string 	| `all`                                 	| What category to search for (films `tt`, people `nm` or companies `co`)                       	|
+| Name          | Type   | Default Value                         | Description                                                                                   |
+| ------------- | ------ | ------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `curlHeaders` | array  | `['Accept-Language: en-US,en;q=0.5']` | Custom headers can be passed to `cURL` when fetching the IMDB page                            |
+| `cache`       | bool   | `true`                                | Caches film data to speed-up future requests for the same film                                |
+| `techSpecs`   | bool   | `true`                                | Loads a films technical specifications (this will take longer as it makes a separate request) |
+| `category`    | string | `all`                                 | What category to search for (films `tt`, people `nm` or companies `co`)                       |
 
 ```php
 $imdb = new Imdb;
@@ -63,8 +58,8 @@ $imdb->search("Interstellar", [
 ]);
 ```
 
-
 ### Best Match
+
 If you do not know the imdb-id of a film, a search string can be entered. This will search imdb and use the first result as the film to fetch data for.
 
 > Note that this will take longer than just entering the ID as it needs to first search imdb before it can get the film data.
@@ -75,31 +70,33 @@ If you do not know the imdb-id of a film, a search string can be entered. This w
 $imdb->film("Apocalypse");
 ```
 
-
-
-
 ## Features
 
 ### Film Data
+
 ```
 - Title
+- Genres
 - Year
-- Rating
-- Poster
 - Length
 - Plot
+- Rating
+- Rating Votes (# of votes)
+- Poster
 - Trailer
     - id
     - link
 - Cast
     - actor name
     - actor id
-    - image
+    - character
+    - avatar
+    - avatar_hq (high quality avatar)
 - Technical Specs
 ```
 
-
 ### Search
+
 Search IMDB to return an array of films, people and companies
 
 ```
@@ -117,11 +114,9 @@ Search IMDB to return an array of films, people and companies
     - image
 ```
 
-
-
-
 ## Dependencies
+
 > All dependencies are managed automatically by `composer`.
 
-- [php-html-parser](https://github.com/paquettg/php-html-parser)
-- [filebase](https://github.com/tmarois/Filebase)
+-   [php-html-parser](https://github.com/paquettg/php-html-parser)
+-   [filebase](https://github.com/tmarois/Filebase)

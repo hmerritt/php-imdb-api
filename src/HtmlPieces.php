@@ -39,11 +39,11 @@ class HtmlPieces
 
                 if ($this->count($allGenres)) {
                     foreach ($allGenres as $genre) {
-                        $genres[] = $genre->find('span')->text();
+                        $genres[] = $this->strClean($genre->find('span')->text());
                     }
                 }
 
-                return $this->strClean(implode(", ", $genres));
+                return $genres;
                 break;
 
             case "year":
@@ -54,7 +54,7 @@ class HtmlPieces
                 if ($this->count($year) > 4) {
                     // Extract year from text
                     // \d{4}.\d{4}
-                    $matchYear = preg_replace("/[^\d{4}-–\d{4}]/", "", $year);
+                    $matchYear = preg_replace("/[^\d{4}--\d{4}]/", "", $year);
                     if ($this->count($matchYear) > 0) {
                         $year = $matchYear;
                     }
@@ -93,21 +93,21 @@ class HtmlPieces
                 break;
 
             case "plot":
-                $patterns = ["p[data-testid=plot] > span[data-testid=plot-xl]", ".plot_summary .summary_text"];
+                $patterns = ["p[data-testid=plot] > span[data-testid=plot-xl]", "[data-testid=plot-xl]", ".plot_summary .summary_text"];
                 $plot = $this->findMatchInPatterns($dom, $page, $patterns);
 
                 return $this->strClean($plot);
                 break;
 
             case "rating":
-                $patterns = ["main div[data-testid=hero-rating-bar__aggregate-rating__score] span", ".ratings_wrapper .ratingValue span[itemprop=ratingValue]"];
+                $patterns = ["[data-testid=hero-rating-bar__aggregate-rating__score] > span", ".ratings_wrapper .ratingValue span[itemprop=ratingValue]"];
                 $rating = $this->findMatchInPatterns($dom, $page, $patterns);
 
                 return $this->strClean($rating);
                 break;
 
             case "rating_votes":
-                $patterns = ["main div[class*=TotalRatingAmount]", ".ratings_wrapper span[itemprop=ratingCount]"];
+                $patterns = ["[class*=TotalRatingAmount]", ".ratings_wrapper span[itemprop=ratingCount]"];
                 $rating_votes = $this->findMatchInPatterns($dom, $page, $patterns);
                 $rating_votes = $this->unwrapFormattedNumber($rating_votes);
 
@@ -197,6 +197,7 @@ class HtmlPieces
                         $actor = [];
                         $actor["actor"] = "";
                         $actor["avatar"] = "";
+                        $actor["avatar_hq"] = "";
                         $actor["actor_id"] = "";
                         $actor["character"] = "";
     
@@ -210,6 +211,11 @@ class HtmlPieces
                         $actorAvatar = $castRow->find('img.ipc-image');
                         if ($this->count($actorAvatar)) {
                             $actor["avatar"] = $actorAvatar->getAttribute('src');
+                            $actor["avatar_hq"] = preg_match('/@/', $actor["avatar"]) ? preg_split('~@(?=[^@]*$)~', $actor["avatar"])[0] . "@.jpg" : $actor["avatar"];
+
+                            if ($actor["avatar"] == $actor["avatar_hq"]) {
+                                $actor["avatar_hq"] = preg_match('/\.\_/', $actor["avatar_hq"]) ? preg_split('/\.\_.*/', $actor["avatar_hq"])[0] . ".jpg" : $actor["avatar_hq"];
+                            }
                         }
     
                         // Actor ID

@@ -90,12 +90,12 @@ class Imdb
         }
 
         //  Load imdb film page and parse the dom
-        $page = $dom->fetch("https://www.imdb.com/title/".$filmId, $options);
+        $page = $dom->fetch("https://www.imdb.com/title/".$filmId."/", $options);
 
         //  Add all film data to response $store
         $response->add("id", $filmId);
         $response->add("title", $htmlPieces->get($page, "title"));
-        $response->add("genre", $htmlPieces->get($page, "genre"));
+        $response->add("genres", $htmlPieces->get($page, "genre"));
         $response->add("year", $htmlPieces->get($page, "year"));
         $response->add("length", $htmlPieces->get($page, "length"));
         $response->add("plot", $htmlPieces->get($page, "plot"));

@@ -1,0 +1,49 @@
+# PHP CircleCI 2.0 configuration file
+# See: https://circleci.com/docs/2.0/language-php/
+version: 2
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+jobs:
+    test:
+        # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+        # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+        docker:
+            # Specify the version you desire here
+            - image: cimg/php:8.1.2
+
+        # Add steps to the job
+        # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+        steps:
+            - checkout
+
+            # Download and cache dependencies
+            - restore_cache:
+                  keys:
+                      # "composer.lock" can be used if it is committed to the repo
+                      - v1-dependencies-{{ checksum "composer.lock" }}
+                      # fallback to using the latest cache if no exact match is found
+                      - v1-dependencies-
+
+            - run:
+                  name: Setup & install dependencies
+                  command: |
+                      composer install --no-interaction
+
+            - run:
+                  name: Enable PCOV, disable Xdebug
+                  command: |
+                      mkdir -p ./build/logs
+                      sudo pecl install pcov
+
+            - run:
+                  name: Tests
+                  command: |
+                      composer test
+                  #   php ./vendor/bin/php-coveralls -v
+
+workflows:
+    version: 2
+    test:
+        jobs:
+            - test

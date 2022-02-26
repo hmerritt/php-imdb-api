@@ -1,4 +1,4 @@
 vendor/*
 build/*
 src/cache/*
-composer.lock
+.phpunit.result.cache
