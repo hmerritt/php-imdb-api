@@ -47,7 +47,7 @@ class HtmlPieces
                 break;
 
             case "year":
-                $patterns = ["section section div div div ul li a", ".title_wrapper h1 #titleYear a", ".title_wrapper .subtext a[title='See more release dates']"];
+                $patterns = ["[data-testid=hero-title-block__metadata] > li > a", ".title_wrapper h1 #titleYear a", ".title_wrapper .subtext a[title='See more release dates']", "section section div div div ul li a"];
                 $year = $this->findMatchInPatterns($dom, $page, $patterns);
 
                 // Detect OLD IMDB + TV show
@@ -125,7 +125,7 @@ class HtmlPieces
             case "trailer":
                 // section section div section section div div div div div a[aria-label^=Watch]
                 // div a[class*=hero-media][aria-label^=Watch]
-                $patterns = ["div a[aria-label^=Watch]", ".slate a[data-video]"];
+                $patterns = ["a[data-testid=videos-slate-overlay-1]", "div a[aria-label^=Watch]", ".slate a[data-video]"];
                 $trailerLinkOld = $dom->find($page, $patterns[1]);
                 $trailerLink = $dom->find($page, $patterns[0]);
 
@@ -152,7 +152,7 @@ class HtmlPieces
             case "cast":
                 $cast = [];
                 $findAllCastOld = $dom->find($page, 'table.cast_list tr');
-                $findAllCast = $dom->find($page, 'section[data-testid=title-cast] div.title-cast__grid div.ipc-sub-grid div');
+                $findAllCast = $dom->find($page, '[data-testid=title-cast] [data-testid=shoveler-items-container] > div');
 
                 // Use $findAllCastOld
                 if ($this->count($findAllCastOld)) {
@@ -229,7 +229,7 @@ class HtmlPieces
                         }
     
                         // Character
-                        $characterLink = $castRow->find('span[data-testid=cast-item-characters-with-as]');
+                        $characterLink = $castRow->find('[data-testid=cast-item-characters-link] span');
                         if ($this->count($characterLink)) {
                             $actor["character"] = $characterLink->text;
                         }
