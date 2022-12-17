@@ -19,7 +19,7 @@ class HtmlPieces
      * @param string $element
      * @return string
      */
-    public function get(object $page, string $element)
+    public function get(object $page, string $element, string $url='')
     {
         //  Initiate dom object
         //  -> handles page scraping
@@ -32,7 +32,7 @@ class HtmlPieces
 
                 return $this->strClean($title);
                 break;
-                
+
             case "genre":
                 $allGenres = $dom->find($page, "div[data-testid=genres] a");
                 $genres = [];
@@ -193,14 +193,14 @@ class HtmlPieces
                         if ($this->count($castRow->find('img')) === 0) {
                             continue;
                         }
-    
+
                         $actor = [];
                         $actor["actor"] = "";
                         $actor["avatar"] = "";
                         $actor["avatar_hq"] = "";
                         $actor["actor_id"] = "";
                         $actor["character"] = "";
-    
+
                         // Actor
                         $actorLink = $castRow->find('a[data-testid=title-cast-item__actor]');
                         if ($this->count($actorLink)) {
@@ -217,7 +217,7 @@ class HtmlPieces
                                 $actor["avatar_hq"] = preg_match('/\.\_/', $actor["avatar_hq"]) ? preg_split('/\.\_.*/', $actor["avatar_hq"])[0] . ".jpg" : $actor["avatar_hq"];
                             }
                         }
-    
+
                         // Actor ID
                         $link = $castRow->find('a');
                         if ($this->count($link)) {
@@ -227,22 +227,59 @@ class HtmlPieces
                                 $actor["actor_id"] = $matches[0];
                             }
                         }
-    
+
                         // Character
                         $characterLink = $castRow->find('[data-testid=cast-item-characters-link] span');
                         if ($this->count($characterLink)) {
                             $actor["character"] = $characterLink->text;
                         }
-    
+
                         $actor["character"] = $this->strClean($actor["character"]);
                         $actor["actor"]     = $this->strClean($actor["actor"]);
                         $actor["avatar"]    = $this->strClean($actor["avatar"]);
                         $actor["actor_id"]  = $this->strClean($actor["actor_id"]);
-    
+
                         array_push($cast, $actor);
                     }
                 }
                 return $cast;
+                break;
+
+            case "seasons":
+                $seasons = [];
+                $findAllSeasons = $dom->find($page, "#bySeason > option");
+                $dom = new \PHPHtmlParser\Dom();
+                foreach ($findAllSeasons as $seasonRow){
+                    $season = [];
+                    $seasonValue = $seasonRow->getAttribute('value');
+                    $season['season'] = $seasonValue;
+                    // Using imdb ajax api to get episodes
+                    $season['episodes'] = $this->get($dom->loadFromUrl($url."/_ajax?season=".$seasonValue), "episodes");
+                    array_push($seasons, $season);
+                }
+                return $seasons;
+                break;
+
+            case "episodes":
+                $episodes = [];
+                $findAllEpisodes = $dom->find($page, ".eplist > .list_item");
+                foreach ($findAllEpisodes as $episodeRow){
+                    $episode = [];
+                    $hyperlink = $episodeRow->find("a[itemprop=url]");
+                    $episode["id"]          = $this->extractImdbId($hyperlink->getAttribute("href"));
+                    $episode['title']       = $episodeRow->find('a[itemprop=name]')->text;
+                    $episode['description'] = $episodeRow->find(".item_description")->text;
+                    $rating                 = $episodeRow->find(".ipl-rating-star__rating");
+                    if($this->count($rating)) {
+                        $episode['rating'] = $rating->text;
+                    }
+                    $image = $hyperlink->find("img");
+                    if($this->count($image)) {
+                        $episode["poster"] = $image->getAttribute("src");
+                    }
+                    array_push($episodes, $episode);
+                }
+                return $episodes;
                 break;
 
             case "technical_specs":
@@ -315,7 +352,7 @@ class HtmlPieces
      *
      * @param  object $page
      * @param  array  $patterns
-     * @return string 
+     * @return string
      */
     public function findMatchInPatterns(object $dom, object $page, array $patterns, string $type = "text")
     {
