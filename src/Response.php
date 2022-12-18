@@ -80,6 +80,7 @@ class Response
                         "id" => "",
                         "link" => ""
                     ],
+                    "seasons" => [],
                     "cast" => [],
                     "technical_specs" => []
                 ];
