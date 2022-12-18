@@ -245,6 +245,11 @@ class HtmlPieces
                 return $cast;
                 break;
 
+            case "tvShow":
+                preg_match('/TV Series/i', $page, $matches, PREG_OFFSET_CAPTURE);
+                return !!$this->count($matches);
+                break;
+
             case "seasons":
                 $seasons = [];
                 $findAllSeasons = $dom->find($page, "#bySeason > option");

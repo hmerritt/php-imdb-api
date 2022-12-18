@@ -80,8 +80,9 @@ class Response
                         "id" => "",
                         "link" => ""
                     ],
-                    "seasons" => [],
+                    "tvShow" => false,
                     "cast" => [],
+                    "seasons" => [],
                     "technical_specs" => []
                 ];
                 break;

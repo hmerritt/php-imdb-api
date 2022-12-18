@@ -104,16 +104,16 @@ class Imdb
         $response->add("rating_votes", $htmlPieces->get($page, "rating_votes"));
         $response->add("poster", $htmlPieces->get($page, "poster"));
         $response->add("trailer", $htmlPieces->get($page, "trailer"));
+        $response->add("tvShow",  $htmlPieces->get($page, "tvShow"));
         $response->add("cast", $htmlPieces->get($page, "cast"));
+        $response->add("seasons",  []);
+        $response->add("technical_specs",  []);
 
         //  If techSpecs is enabled in user $options
         //  -> Make a second request to load the full techSpecs page
         if ($options["techSpecs"]) {
                 $page_techSpecs = $dom->fetch("https://www.imdb.com/title/$filmId/technical", $options);
                 $response->add("technical_specs", $htmlPieces->get($page_techSpecs, "technical_specs"));
-        }
-        else {
-            $response->add("technical_specs",  []);
         }
 
         // If seasons is enabled
