@@ -71,7 +71,7 @@ class ImdbTest extends TestCase {
     {
         $imdb = new Imdb;
         $cache = new Cache;
-        $film = $imdb->film('tt0816692', [ 'techSpecs' => false ]);
+        $film = $imdb->film('tt0816692', [ 'cache' => true, 'techSpecs' => false ]);
         $cache_film = $cache->get('tt0816692')->film;
 
         $this->assertEquals(true, $cache->has('tt0816692'));

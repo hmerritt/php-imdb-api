@@ -313,29 +313,30 @@ class HtmlPieces
 
             case "titles":
             case "names":
+            case "people":
             case "companies":
                 $response = [];
-                $sections = $dom->find($page, ".findSection");
+                $sections = $dom->find($page, ".ipc-page-section");
                 if ($this->count($sections) > 0)
                 {
                     foreach ($sections as $section)
                     {
-                        $sectionName = @strtolower($section->find(".findSectionHeader")->text);
+                        $sectionName = @strtolower($dom->find($section, ".ipc-title__text")->text);
                         if ($sectionName === $element) {
-                            $sectionRows = $section->find(".findList tr");
+                            $sectionRows = $section->find("ul li");
                             if ($this->count($sectionRows) > 0)
                             {
                                 foreach ($sectionRows as $sectionRow)
                                 {
                                     $row = [];
 
-                                    $link = $dom->find($sectionRow, 'td.result_text a');
+                                    $link = $dom->find($sectionRow, 'a');
                                     $row["title"] = $link->text;
                                     if ($row["title"] == "") {
                                         continue;
                                     }
 
-                                    $row["image"] = $dom->find($sectionRow, 'td.primary_photo img')->src;
+                                    $row["image"] = $dom->find($sectionRow, '.ipc-image')->src;
                                     if (preg_match('/@/', $row["image"]))
                                     {
                                         $row["image"] = preg_split('~@(?=[^@]*$)~', $row["image"])[0] . "@.jpg";

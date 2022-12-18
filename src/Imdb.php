@@ -168,7 +168,7 @@ class Imdb
 
         //  Add all search data to response $store
         $response->add("titles", $htmlPieces->get($page, "titles"));
-        $response->add("names", $htmlPieces->get($page, "names"));
+        $response->add("names", $htmlPieces->get($page, "people"));
         $response->add("companies", $htmlPieces->get($page, "companies"));
 
         return $response->return();
