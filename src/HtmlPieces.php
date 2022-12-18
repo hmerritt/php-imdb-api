@@ -270,12 +270,18 @@ class HtmlPieces
                     $episode['title']       = $episodeRow->find('a[itemprop=name]')->text;
                     $episode['description'] = $episodeRow->find(".item_description")->text;
                     $rating                 = $episodeRow->find(".ipl-rating-star__rating");
+                    $episode["poster"]      = "";
                     if($this->count($rating)) {
                         $episode['rating'] = $rating->text;
                     }
                     $image = $hyperlink->find("img");
                     if($this->count($image)) {
-                        $episode["poster"] = $image->getAttribute("src");
+                        $poster = $image->getAttribute("src");
+                        $episode["poster"] = preg_match('/@/', $poster) ? preg_split('~@(?=[^@]*$)~', $poster)[0] . "@.jpg" : $poster;
+
+                        if ($poster == $episode["poster"]) {
+                            $episode["poster"] = preg_match('/\.\_/', $episode["poster"]) ? preg_split('/\.\_.*/', $episode["poster"])[0] . ".jpg" : $episode["poster"];
+                        }
                     }
                     array_push($episodes, $episode);
                 }
