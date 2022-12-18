@@ -25,7 +25,7 @@ class Imdb
             'category'     => 'all',
             'curlHeaders'  => ['Accept-Language: en-US,en;q=0.5'],
             'techSpecs'    => true,
-            'seasons'      => true,
+            'seasons'      => false,
         ];
 
         //  Merge any user options with the default ones
@@ -116,8 +116,8 @@ class Imdb
                 $response->add("technical_specs", $htmlPieces->get($page_techSpecs, "technical_specs"));
         }
 
-        // If seasons is enabled
-        if ($options['seasons']) {
+        // If seasons is enabled & is a tv show
+        if ($options['seasons'] && $response->get("tvShow")) {
             $url = "https://www.imdb.com/title/$filmId/episodes";
             $page_seasons = $dom->fetch($url, $options);
             // If film has episodes or seasons
