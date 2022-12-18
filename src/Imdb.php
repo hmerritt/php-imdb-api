@@ -25,6 +25,7 @@ class Imdb
             'category'     => 'all',
             'curlHeaders'  => ['Accept-Language: en-US,en;q=0.5'],
             'techSpecs'    => true,
+            'seasons'      => false,
         ];
 
         //  Merge any user options with the default ones
@@ -103,7 +104,10 @@ class Imdb
         $response->add("rating_votes", $htmlPieces->get($page, "rating_votes"));
         $response->add("poster", $htmlPieces->get($page, "poster"));
         $response->add("trailer", $htmlPieces->get($page, "trailer"));
+        $response->add("tvShow",  $htmlPieces->get($page, "tvShow"));
         $response->add("cast", $htmlPieces->get($page, "cast"));
+        $response->add("seasons",  []);
+        $response->add("technical_specs",  []);
 
         //  If techSpecs is enabled in user $options
         //  -> Make a second request to load the full techSpecs page
@@ -111,8 +115,15 @@ class Imdb
                 $page_techSpecs = $dom->fetch("https://www.imdb.com/title/$filmId/technical", $options);
                 $response->add("technical_specs", $htmlPieces->get($page_techSpecs, "technical_specs"));
         }
-        else {
-            $response->add("technical_specs",  []);
+
+        // If seasons is enabled & is a tv show
+        if ($options['seasons'] && $response->get("tvShow")) {
+            $url = "https://www.imdb.com/title/$filmId/episodes";
+            $page_seasons = $dom->fetch($url, $options);
+            // If film has episodes or seasons
+            if (count($page_seasons->find(".error_code_404")) == 0) {
+                $response->add("seasons", $htmlPieces->get($page_seasons, "seasons", $url));
+            }
         }
 
         //  If caching is enabled
@@ -157,7 +168,7 @@ class Imdb
 
         //  Add all search data to response $store
         $response->add("titles", $htmlPieces->get($page, "titles"));
-        $response->add("names", $htmlPieces->get($page, "names"));
+        $response->add("names", $htmlPieces->get($page, "people"));
         $response->add("companies", $htmlPieces->get($page, "companies"));
 
         return $response->return();
