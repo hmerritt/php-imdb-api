@@ -18,7 +18,7 @@ $imdb = new Imdb();
 switch($type)
 {
 	case "film":
-		$response = $imdb->film($query);
+		$response = $imdb->film($query, [ 'cache' => false, 'techSpecs' => false ]);
 		break;
 
 	case "search":
