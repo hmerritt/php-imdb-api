@@ -92,6 +92,7 @@ class Imdb
 
         //  Load imdb film page and parse the dom
         $page = $dom->fetch("https://www.imdb.com/title/".$filmId."/", $options);
+        $htmlPieces->setFilmId($filmId);
 
         //  Add all film data to response $store
         $response->add("id", $filmId);

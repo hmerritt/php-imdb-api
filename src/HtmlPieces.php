@@ -10,6 +10,17 @@ namespace hmerritt;
 */
 class HtmlPieces
 {
+    public ?string $filmId;
+
+    public function __construct(?string $filmId = null)
+    {
+        $this->filmId = $filmId;
+    }
+
+    public function setFilmId(string $filmId = null)
+    {
+        $this->filmId = $filmId;
+    }
 
     /**
      * Attempts to find and return a specific element
@@ -47,7 +58,7 @@ class HtmlPieces
                 break;
 
             case "year":
-                $patterns = ["[data-testid=hero-title-block__metadata] > li > a", ".title_wrapper h1 #titleYear a", ".title_wrapper .subtext a[title='See more release dates']", "section section div div div ul li a"];
+                $patterns = ["a[href='/title/{$this->filmId}/releaseinfo?ref_=tt_ov_rdat']", "[data-testid=hero-title-block__metadata] > li > a", ".title_wrapper h1 #titleYear a", ".title_wrapper .subtext a[title='See more release dates']", "section section div div div ul li a"];
                 $year = $this->findMatchInPatterns($dom, $page, $patterns);
 
                 // Detect OLD IMDB + TV show
