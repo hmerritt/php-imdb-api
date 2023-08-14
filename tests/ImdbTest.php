@@ -19,8 +19,8 @@ class ImdbTest extends TestCase {
         $this->assertEquals('Sci-Fi', $film['genres'][2]);
         $this->assertEquals('2h 49m', $film['length']);
         $this->assertEquals('2014', $film['year']);
-        $this->assertEquals("A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.", $film['plot']);
-        $this->assertEquals('8.6', $film['rating']);
+        $this->assertEquals("When Earth becomes uninhabitable in the future, a farmer and ex-NASA pilot, Joseph Cooper, is tasked to pilot a spacecraft, along with a team of researchers, to find a new planet for humans.", $film['plot']);
+        $this->assertEquals('8.7', $film['rating']);
         $this->assertEquals('vi1586278169', $film['trailer']["id"]);
         $this->assertEquals('https://www.imdb.com/video/vi1586278169', $film['trailer']["link"]);
         $this->assertContains($film['cast'][0]["character"], ['Cooper']);
@@ -41,8 +41,8 @@ class ImdbTest extends TestCase {
         $this->assertEquals('Sci-Fi', $film['genres'][2]);
         $this->assertEquals('2h 49m', $film['length']);
         $this->assertEquals('2014', $film['year']);
-        $this->assertEquals("A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.", $film['plot']);
-        $this->assertEquals('8.6', $film['rating']);
+        $this->assertEquals("When Earth becomes uninhabitable in the future, a farmer and ex-NASA pilot, Joseph Cooper, is tasked to pilot a spacecraft, along with a team of researchers, to find a new planet for humans.", $film['plot']);
+        $this->assertEquals('8.7', $film['rating']);
         $this->assertEquals('vi1586278169', $film['trailer']["id"]);
         $this->assertEquals('https://www.imdb.com/video/vi1586278169', $film['trailer']["link"]);
         $this->assertContains($film['cast'][0]["character"], ['Cooper']);
