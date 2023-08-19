@@ -10,9 +10,9 @@ namespace hmerritt;
 */
 class HtmlPieces
 {
-    public ?string $filmId;
+    public $filmId;
 
-    public function __construct(?string $filmId = null)
+    public function __construct(string $filmId = null)
     {
         $this->filmId = $filmId;
     }
