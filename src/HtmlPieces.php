@@ -337,7 +337,8 @@ class HtmlPieces
                 ] as $itemId)
                 {
                     $row = $dom->find($page, "#$itemId");
-                    $row_title = $row->find(".ipc-metadata-list-item__label")->text(true);
+                    $row_title = $row->find(".ipc-metadata-list-item__label");
+                    if ($this->count($row_title) < 1) continue;
                     $row_value_container = $row->find('.ipc-metadata-list-item__content-container');
                     $row_value_list = $row_value_container->find('li');
                     $row_value = '';
@@ -358,7 +359,7 @@ class HtmlPieces
                         $row_value = $row_value_container->text(true);
                     }
                     $row = [
-                        $this->strClean($row_title),
+                        $this->strClean($row_title->text(true)),
                         $this->strClean($row_value)
                     ];
                     array_push($technical_specs, $row);
