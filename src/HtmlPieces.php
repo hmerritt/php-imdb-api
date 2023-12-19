@@ -338,7 +338,25 @@ class HtmlPieces
                 {
                     $row = $dom->find($page, "#$itemId");
                     $row_title = $row->find(".ipc-metadata-list-item__label")->text(true);
-                    $row_value = $row->find('.ipc-metadata-list-item__content-container')->text(true);
+                    $row_value_container = $row->find('.ipc-metadata-list-item__content-container');
+                    $row_value_list = $row_value_container->find('li');
+                    $row_value = '';
+                    if ($this->count($row_value_list) > 0) {
+                        foreach ($row_value_list as $list_item)
+                        {
+                            $list_item_value = $list_item->find('.ipc-metadata-list-item__list-content-item');
+                            $list_item_subtext = $list_item->find('.ipc-metadata-list-item__list-content-item--subText');
+                            if ($this->count($list_item_value) > 0) {
+                                $delimiter = '|';
+                                $textToAdd = $list_item_value->text(true);
+                                if ($this->count($list_item_subtext) > 0) $textToAdd = "$textToAdd " . $list_item_subtext->text(true);
+                                if ($this->count($row_value) > 0) $textToAdd .= " $delimiter $textToAdd";
+                                $row_value .= $textToAdd;
+                            }
+                        }
+                    } else {
+                        $row_value = $row_value_container->text(true);
+                    }
                     $row = [
                         $this->strClean($row_title),
                         $this->strClean($row_value)
