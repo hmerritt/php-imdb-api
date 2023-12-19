@@ -306,8 +306,10 @@ class HtmlPieces
 
             case "technical_specs":
                 $technical_specs = [];
+
+                // Old ui
                 $table = $dom->find($page, '.dataTable tr');
-                if ($this->count($table) > 0) {
+                if ($this->count($table) > 0) { 
                     foreach ($table as $row)
                     {
                         $row_title = $row->find('td')[0]->text(true);
@@ -319,6 +321,31 @@ class HtmlPieces
                         array_push($technical_specs, $row);
                     }
                 }
+
+                // New ui
+                foreach ([
+                    'runtime',
+                    'soundmixes',
+                    'colorations',
+                    'aspectratio',
+                    'cameras',
+                    'laboratory',
+                    'filmLength',
+                    'negativeFormat',
+                    'process',
+                    'printedFormat'
+                ] as $itemId)
+                {
+                    $row = $dom->find($page, "#$itemId");
+                    $row_title = $row->find(".ipc-metadata-list-item__label")->text(true);
+                    $row_value = $row->find('.ipc-metadata-list-item__content-container')->text(true);
+                    $row = [
+                        $this->strClean($row_title),
+                        $this->strClean($row_value)
+                    ];
+                    array_push($technical_specs, $row);
+                }
+
                 return $technical_specs;
                 break;
 
