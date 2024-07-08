@@ -118,7 +118,7 @@ class HtmlPieces
                 break;
 
             case "rating_votes":
-                $patterns = [".sc-bde20123-3", "[class*=TotalRatingAmount]", ".ratings_wrapper span[itemprop=ratingCount]"];
+                $patterns = [".sc-eb51e184-3", ".sc-bde20123-3", "[class*=TotalRatingAmount]", ".ratings_wrapper span[itemprop=ratingCount]"];
                 $rating_votes = $this->findMatchInPatterns($dom, $page, $patterns);
                 $rating_votes = $this->unwrapFormattedNumber($rating_votes);
 
