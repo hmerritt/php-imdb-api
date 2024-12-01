@@ -45,7 +45,15 @@ class HtmlPieces
                 break;
 
             case "genre":
-                $allGenres = $dom->find($page, "div[data-testid=genres] a");
+                $patterns = ["div[data-testid=interests] a", "div[data-testid=genres] a"];
+                $allGenres = $dom->find($page, $patterns[0]);
+                
+                // Legacy
+                if (!$this->count($allGenres)) {
+                    $allGenresLegacy = $dom->find($page, $patterns[1]);
+                    $allGenres = $allGenresLegacy;
+                }
+
                 $genres = [];
 
                 if ($this->count($allGenres)) {

@@ -14,9 +14,9 @@ class ImdbTest extends TestCase {
 
         $this->assertEquals('tt0816692', $film['id']);
         $this->assertEquals('Interstellar', $film['title']);
-        $this->assertEquals('Adventure', $film['genres'][0]);
-        $this->assertEquals('Drama', $film['genres'][1]);
-        $this->assertEquals('Sci-Fi', $film['genres'][2]);
+        $this->assertEquals('Adventure Epic', $film['genres'][0]);
+        $this->assertEquals('Epic', $film['genres'][1]);
+        $this->assertEquals('Quest', $film['genres'][2]);
         $this->assertEquals('2h 49m', $film['length']);
         $this->assertEquals('2014', $film['year']);
         $this->assertEquals("When Earth becomes uninhabitable in the future, a farmer and ex-NASA pilot, Joseph Cooper, is tasked to pilot a spacecraft, along with a team of researchers, to find a new planet for humans.", $film['plot']);
@@ -36,9 +36,9 @@ class ImdbTest extends TestCase {
 
         $this->assertEquals('tt0816692', $film['id']);
         $this->assertEquals('Interstellar', $film['title']);
-        $this->assertEquals('Adventure', $film['genres'][0]);
-        $this->assertEquals('Drama', $film['genres'][1]);
-        $this->assertEquals('Sci-Fi', $film['genres'][2]);
+        $this->assertEquals('Adventure Epic', $film['genres'][0]);
+        $this->assertEquals('Epic', $film['genres'][1]);
+        $this->assertEquals('Quest', $film['genres'][2]);
         $this->assertEquals('2h 49m', $film['length']);
         $this->assertEquals('2014', $film['year']);
         $this->assertEquals("When Earth becomes uninhabitable in the future, a farmer and ex-NASA pilot, Joseph Cooper, is tasked to pilot a spacecraft, along with a team of researchers, to find a new planet for humans.", $film['plot']);
